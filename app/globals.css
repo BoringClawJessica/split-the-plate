@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --bg-deep: #080603;
+  --bg-base: #0f0c08;
+  --bg-surface: #1a1510;
+  --bg-raised: #231c14;
+  --bg-card: #2c2318;
+  --border: #3d3020;
+  --border-bright: #5a4530;
+
+  --amber: #F59E0B;
+  --amber-dim: #b87a08;
+  --orange: #EA580C;
+  --orange-dim: #c44a0a;
+  --red: #dc2626;
+  --green: #16a34a;
+
+  --text: #f5f0e8;
+  --text-secondary: #a89070;
+  --text-muted: #6b5c45;
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background: var(--bg-base);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+
+/* Grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+/* Override shadcn vars */
+@layer base {
+  :root {
+    --background: 20 10% 4%;
+    --foreground: 40 30% 95%;
+    --card: 30 20% 10%;
+    --card-foreground: 40 30% 95%;
+    --popover: 30 20% 10%;
+    --popover-foreground: 40 30% 95%;
+    --primary: 38 92% 50%;
+    --primary-foreground: 20 10% 4%;
+    --secondary: 30 20% 15%;
+    --secondary-foreground: 40 30% 95%;
+    --muted: 30 20% 12%;
+    --muted-foreground: 30 20% 50%;
+    --accent: 24 95% 48%;
+    --accent-foreground: 40 30% 95%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 40 30% 95%;
+    --border: 30 20% 18%;
+    --input: 30 20% 15%;
+    --ring: 38 92% 50%;
+    --radius: 1rem;
+  }
+}
+
+/* Utility classes */
+.font-display { font-family: var(--font-display); }
+.font-body { font-family: var(--font-body); }
+
+/* iPhone screen scroll */
+.phone-screen {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+}
+.phone-screen::-webkit-scrollbar { display: none; }
+
+/* Glow effects */
+.glow-amber { box-shadow: 0 0 20px rgba(245, 158, 11, 0.3); }
+.glow-orange { box-shadow: 0 0 20px rgba(234, 88, 12, 0.3); }
+
+/* Scan line animation */
+@keyframes scanline {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce-in {
+  0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+  60% { transform: scale(1.05) translateY(-5px); }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+@keyframes plinko-drop {
+  0% { transform: translateY(-100px); opacity: 0; }
+  10% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+/* Button press */
+button:active { transform: scale(0.97); }
