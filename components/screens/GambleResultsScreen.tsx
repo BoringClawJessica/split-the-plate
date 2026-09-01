@@ -159,7 +159,7 @@ export default function GambleResultsScreen() {
 
       <div style={{ padding: "16px 20px 92px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", flexShrink: 0 }}>
         <button
-          onClick={() => router.push("/screen/save-meal")}
+          onClick={() => router.push("/screen/meal-detail")}
           style={{
             width: "100%", padding: "15px", borderRadius: 14,
             background: "var(--amber)", color: "#000",
@@ -167,7 +167,7 @@ export default function GambleResultsScreen() {
             fontFamily: "var(--font-body)",
           }}
         >
-          Send Requests &amp; Save Meal
+          Send Requests
         </button>
       </div>
       <HomeBottomBar />

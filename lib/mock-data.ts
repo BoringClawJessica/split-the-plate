@@ -39,46 +39,220 @@ export const friends = [
   },
 ];
 
-export const pastMeals = [
+// PaymentStatus: "paid" | "not_paid" | "awaiting_cash"
+export type PaymentStatus = "paid" | "not_paid" | "awaiting_cash";
+
+// SplitMethod: "even" | "by_item" | "custom" | "plinko" | "roulette"
+export type SplitMethod = "even" | "by_item" | "custom" | "plinko" | "roulette";
+
+export interface MealReceiptLine {
+  name: string;
+  price: number;
+}
+
+export interface MealPerson {
+  id: string;
+  name: string;
+  avatar: string;
+  items: string[];
+  amountPaid: number;
+  paymentMethodId: string; // matches paymentMethods.id
+  status: PaymentStatus;
+}
+
+export interface PastMeal {
+  id: string;
+  restaurant: string;
+  date: string;
+  scanned: boolean;
+  receiptPhoto?: string; // url or null when not scanned
+  receipt: {
+    items: MealReceiptLine[];
+    subtotal: number;
+    tax: number;
+    total: number;
+  };
+  people: MealPerson[];
+  splitMethod: SplitMethod;
+  loser?: string; // for plinko / roulette — the person who paid the most / lost
+  yourShare: number;
+  // party is a convenience list of person ids for the recent-meals summary
+  party: string[];
+}
+
+export const pastMeals: PastMeal[] = [
   {
     id: "m1",
     restaurant: "Fuego & Sol Mexican",
     date: "Aug 28",
-    total: 127.5,
-    your_share: 31.88,
-    party: ["eli", "f1", "f2", "f3"],
-    emoji: "",
-    status: "paid",
-    split_method: "even",
-    items: ["Street Tacos x3", "Guac & Chips", "Margarita", "Enchiladas"],
-    photos: [],
+    scanned: true,
+    receiptPhoto:
+      "https://api.dicebear.com/7.x/shapes/svg?seed=receipt-fuego&backgroundColor=fff8f1",
+    receipt: {
+      items: [
+        { name: "Street Tacos x3", price: 24 },
+        { name: "Guac & Chips", price: 12 },
+        { name: "Margarita x2", price: 22 },
+        { name: "Enchiladas", price: 18 },
+        { name: "Carne Asada", price: 32 },
+        { name: "Horchata", price: 6 },
+      ],
+      subtotal: 114,
+      tax: 13.5,
+      total: 127.5,
+    },
+    people: [
+      {
+        id: "u1",
+        name: "Eli",
+        avatar: currentUser.avatar,
+        items: ["Street Tacos x3", "Horchata"],
+        amountPaid: 31.88,
+        paymentMethodId: "applepay",
+        status: "paid",
+      },
+      {
+        id: "f1",
+        name: "Sofia",
+        avatar: friends[0].avatar,
+        items: ["Carne Asada", "Margarita x2"],
+        amountPaid: 31.88,
+        paymentMethodId: "venmo",
+        status: "paid",
+      },
+      {
+        id: "f2",
+        name: "Marcus",
+        avatar: friends[1].avatar,
+        items: ["Enchiladas", "Guac & Chips"],
+        amountPaid: 31.87,
+        paymentMethodId: "cashapp",
+        status: "paid",
+      },
+      {
+        id: "f3",
+        name: "Jade",
+        avatar: friends[2].avatar,
+        items: ["Guac & Chips (share)"],
+        amountPaid: 31.87,
+        paymentMethodId: "zelle",
+        status: "paid",
+      },
+    ],
+    splitMethod: "even",
+    yourShare: 31.88,
+    party: ["u1", "f1", "f2", "f3"],
   },
   {
     id: "m2",
     restaurant: "Sushi Roku",
     date: "Aug 22",
-    total: 210.0,
-    your_share: 52.5,
-    party: ["eli", "f4", "f1"],
-    emoji: "",
-    status: "paid",
-    split_method: "by_item",
-    items: ["Omakase Set", "Sake", "Edamame", "Dragon Roll", "Toro Nigiri x4"],
-    photos: [],
+    scanned: true,
+    receiptPhoto:
+      "https://api.dicebear.com/7.x/shapes/svg?seed=receipt-sushi&backgroundColor=fff8f1",
+    receipt: {
+      items: [
+        { name: "Omakase Set", price: 95 },
+        { name: "Sake", price: 24 },
+        { name: "Edamame", price: 8 },
+        { name: "Dragon Roll", price: 22 },
+        { name: "Toro Nigiri x4", price: 44 },
+      ],
+      subtotal: 193,
+      tax: 17,
+      total: 210,
+    },
+    people: [
+      {
+        id: "u1",
+        name: "Eli",
+        avatar: currentUser.avatar,
+        items: ["Dragon Roll", "Edamame"],
+        amountPaid: 32,
+        paymentMethodId: "applepay",
+        status: "paid",
+      },
+      {
+        id: "f4",
+        name: "Tyler",
+        avatar: friends[3].avatar,
+        items: ["Omakase Set", "Sake"],
+        amountPaid: 125.5,
+        paymentMethodId: "venmo",
+        status: "paid",
+      },
+      {
+        id: "f1",
+        name: "Sofia",
+        avatar: friends[0].avatar,
+        items: ["Toro Nigiri x4"],
+        amountPaid: 52.5,
+        paymentMethodId: "cashapp",
+        status: "paid",
+      },
+    ],
+    splitMethod: "by_item",
+    yourShare: 32,
+    party: ["u1", "f4", "f1"],
   },
   {
     id: "m3",
     restaurant: "Brunch Bar",
     date: "Aug 15",
-    total: 89.0,
-    your_share: 22.25,
-    party: ["eli", "f2", "f3"],
-    emoji: "",
-    status: "paid",
-    split_method: "gamble",
-    winner: "Sofia",
-    items: ["Avocado Toast", "Mimosa Carafe", "Eggs Benedict", "Cold Brew x2"],
-    photos: [],
+    scanned: false, // manual entry — no receipt photo
+    receipt: {
+      items: [
+        { name: "Avocado Toast", price: 16 },
+        { name: "Mimosa Carafe", price: 32 },
+        { name: "Eggs Benedict", price: 22 },
+        { name: "Cold Brew x2", price: 12 },
+      ],
+      subtotal: 82,
+      tax: 7,
+      total: 89,
+    },
+    people: [
+      {
+        id: "u1",
+        name: "Eli",
+        avatar: currentUser.avatar,
+        items: ["(rolled — winner)"],
+        amountPaid: 0,
+        paymentMethodId: "applepay",
+        status: "paid",
+      },
+      {
+        id: "f2",
+        name: "Marcus",
+        avatar: friends[1].avatar,
+        items: ["(rolled)"],
+        amountPaid: 22.25,
+        paymentMethodId: "venmo",
+        status: "paid",
+      },
+      {
+        id: "f3",
+        name: "Jade",
+        avatar: friends[2].avatar,
+        items: ["(lost — paid full)"],
+        amountPaid: 44.5,
+        paymentMethodId: "cash",
+        status: "awaiting_cash",
+      },
+      {
+        id: "f1",
+        name: "Sofia",
+        avatar: friends[0].avatar,
+        items: ["(rolled)"],
+        amountPaid: 22.25,
+        paymentMethodId: "cashapp",
+        status: "not_paid",
+      },
+    ],
+    splitMethod: "plinko",
+    loser: "Jade",
+    yourShare: 0,
+    party: ["u1", "f2", "f3", "f1"],
   },
 ];
 
@@ -95,12 +269,14 @@ export const receiptItems = [
 
 export const receiptTotal = receiptItems.reduce((s, i) => s + i.price, 0); // 187
 
+// Scanned restaurant name mock — surfaces on ItemsDetected
+export const scannedRestaurantName = "Blue Plate Diner";
+
 export const gambleModes: {
   id: string;
   name: string;
   description: string;
   risk: string;
-  emoji?: string;
 }[] = [
   {
     id: "plinko",
@@ -143,7 +319,6 @@ export const paymentMethods: {
   id: string;
   name: string;
   color: string;
-  emoji?: string;
 }[] = [
   { id: "applepay", name: "Apple Pay", color: "#000000" },
   { id: "cashapp", name: "Cash App", color: "#00C244" },
@@ -153,10 +328,55 @@ export const paymentMethods: {
   { id: "cash", name: "Cash", color: "#4b5563" },
 ];
 
-export const tableMessages = [
-  { id: "msg1", sender: "Sofia", text: "omg that wagyu was unreal", time: "8:47 PM", type: "message" },
-  { id: "msg2", sender: "Marcus", text: "someone order the truffle fries again pls", time: "8:49 PM", type: "message" },
-  { id: "msg3", sender: "system", text: "Eli started the check", time: "9:12 PM", type: "system" },
-  { id: "msg4", sender: "Jade", text: "finally lol", time: "9:12 PM", type: "message" },
-  { id: "msg5", sender: "system", text: "All payments received — Meal ended", time: "9:28 PM", type: "system" },
+export const splitMethodLabels: Record<SplitMethod, string> = {
+  even: "Split evenly",
+  by_item: "By item",
+  custom: "Custom split",
+  plinko: "Plinko",
+  roulette: "Spin the Wheel",
+};
+
+// Mock notifications inbox
+export interface InboxNotification {
+  id: string;
+  type: "added_to_split" | "time_to_pay" | "marked_as_paid" | "friend_request";
+  title: string;
+  body: string;
+  time: string;
+  unread: boolean;
+}
+
+export const inboxNotifications: InboxNotification[] = [
+  {
+    id: "n1",
+    type: "added_to_split",
+    title: "Sofia added you to a split",
+    body: "Fuego & Sol Mexican · 4 people",
+    time: "2m ago",
+    unread: true,
+  },
+  {
+    id: "n2",
+    type: "time_to_pay",
+    title: "Time to pay Marcus",
+    body: "$31.88 for Brunch Bar · Tap to send",
+    time: "1h ago",
+    unread: true,
+  },
+  {
+    id: "n3",
+    type: "marked_as_paid",
+    title: "Jade marked you as paid",
+    body: "Sushi Roku · $32.00",
+    time: "Yesterday",
+    unread: false,
+  },
+  {
+    id: "n4",
+    type: "friend_request",
+    title: "Tyler added you as a friend",
+    body: "You can now split meals together",
+    time: "2d ago",
+    unread: false,
+  },
 ];

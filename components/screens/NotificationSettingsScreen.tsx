@@ -22,13 +22,9 @@ function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
 
 export default function NotificationSettingsScreen() {
   const categories = [
-    { key: "newSplit", label: "Added to a split", desc: "When a friend adds you to a new bill", on: true },
-    { key: "payTime", label: "Time to pay", desc: "Your turn in the payment queue", on: true },
-    { key: "paid", label: "Marked as paid", desc: "When someone confirms your payment", on: true },
-    { key: "gamble", label: "Gamble results", desc: "When Plinko / Roulette finishes", on: true },
-    { key: "rollOfDay", label: "Roll of the Day", desc: "Daily gambling challenge reminder", on: false },
-    { key: "friends", label: "Friend activity", desc: "When friends save meals or split", on: false },
-    { key: "promos", label: "Deals & promotions", desc: "Restaurant deals near you", on: false },
+    { key: "newSplit", label: "Added to a new bill", desc: "When a friend adds you to a split", on: true },
+    { key: "payTime", label: "Time to pay", desc: "Leader bumps you until you pay", on: true },
+    { key: "paid", label: "Marked as paid", desc: "When the leader confirms your payment", on: true },
   ];
 
   const [state, setState] = useState(

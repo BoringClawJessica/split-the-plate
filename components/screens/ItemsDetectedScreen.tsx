@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { receiptItems } from "@/lib/mock-data";
+import { receiptItems, scannedRestaurantName } from "@/lib/mock-data";
 import { useState } from "react";
 import { Pencil, Trash2, Plus, X } from "lucide-react";
 import { BackButton, HomeBottomBar } from "../PhoneNav";
@@ -17,6 +17,7 @@ export default function ItemsDetectedScreen() {
   const router = useRouter();
   const [items, setItems] = useState<Item[]>(receiptItems.map((i) => ({ ...i })));
   const [editor, setEditor] = useState<EditorState>({ mode: "closed" });
+  const [restaurant, setRestaurant] = useState<string>(scannedRestaurantName);
 
   const total = items.reduce((s, i) => s + i.price, 0);
 
@@ -48,6 +49,29 @@ export default function ItemsDetectedScreen() {
         <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 4 }}>
           {items.length} items · ${total.toFixed(2)} subtotal
         </div>
+      </div>
+
+      {/* Restaurant name (editable, pre-filled with scanned name) */}
+      <div style={{ padding: "0 20px 14px", flexShrink: 0 }}>
+        <label style={{ display: "block", fontSize: 11, color: "var(--text-muted)", marginBottom: 6, fontFamily: "var(--font-body)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          Restaurant name
+        </label>
+        <input
+          value={restaurant}
+          onChange={(e) => setRestaurant(e.target.value)}
+          placeholder="e.g. Blue Plate Diner"
+          style={{
+            width: "100%",
+            padding: "11px 14px",
+            borderRadius: 10,
+            background: "var(--bg-card)",
+            border: "1px solid var(--border-bright)",
+            color: "var(--text)",
+            fontSize: 15,
+            fontFamily: "var(--font-body)",
+            outline: "none",
+          }}
+        />
       </div>
 
       {/* Items list */}

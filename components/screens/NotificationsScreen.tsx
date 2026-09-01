@@ -42,7 +42,6 @@ export default function NotificationsScreen() {
           "When friends add you to a split",
           "When it's your turn to pay",
           "When someone marks you as paid",
-          "Roll of the Day reminders",
         ].map((item) => (
           <div key={item} style={{
             display: "flex",

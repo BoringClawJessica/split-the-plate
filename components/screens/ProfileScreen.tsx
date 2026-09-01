@@ -1,9 +1,20 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { currentUser, paymentMethods } from "@/lib/mock-data";
-import { Settings, Edit, Users, Utensils, User, Eye, EyeOff, Wallet, Smartphone, DollarSign, Banknote } from "lucide-react";
 import { useState } from "react";
+import { currentUser, paymentMethods } from "@/lib/mock-data";
+import {
+  Settings,
+  Users,
+  Utensils,
+  User,
+  Wallet,
+  Smartphone,
+  DollarSign,
+  Banknote,
+  X,
+  Camera,
+} from "lucide-react";
 import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 // Which methods this user has accepted (mock)
@@ -23,30 +34,54 @@ const iconFor = (id: string) => {
 
 // Mock totals
 const TOTAL_SPEND = 1786;
+const TOTAL_MEALS = currentUser.stats.meals;
+const AVG_SPEND = currentUser.stats.avgSpend;
 
 export default function ProfileScreen() {
   const router = useRouter();
-
-  const [avgPublic, setAvgPublic] = useState(false);
-  const [totalPublic, setTotalPublic] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [name, setName] = useState(currentUser.name);
+  const [handle, setHandle] = useState(currentUser.handle);
 
   return (
     <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
       <BackButton to="/screen/home" />
 
-      {/* Header */}
+      {/* Settings shortcut */}
       <div style={{ padding: "14px 20px 4px", display: "flex", justifyContent: "flex-end", flexShrink: 0 }}>
         <button
           onClick={() => router.push("/screen/settings")}
-          style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)", display: "flex", gap: 8, alignItems: "center", fontSize: 13, fontFamily: "var(--font-body)" }}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            color: "var(--text-secondary)",
+            display: "flex",
+            gap: 8,
+            alignItems: "center",
+            fontSize: 13,
+            fontFamily: "var(--font-body)",
+          }}
         >
           <Settings size={18} /> Settings
         </button>
       </div>
 
-      {/* Profile header */}
+      {/* Profile header — tap avatar to edit */}
       <div style={{ padding: "0 20px 16px", flexShrink: 0, textAlign: "center" }}>
-        <div style={{ position: "relative", display: "inline-block", marginBottom: 12 }}>
+        <button
+          onClick={() => setEditOpen(true)}
+          aria-label="Edit profile"
+          style={{
+            position: "relative",
+            display: "inline-block",
+            marginBottom: 12,
+            background: "none",
+            border: "none",
+            padding: 0,
+            cursor: "pointer",
+          }}
+        >
           <div style={{
             width: 88,
             height: 88,
@@ -60,115 +95,104 @@ export default function ProfileScreen() {
           }}>
             <User size={40} color="#000" strokeWidth={1.6} />
           </div>
-          <button
-            onClick={() => router.push("/screen/settings")}
-            style={{
-              position: "absolute",
-              bottom: 0,
-              right: 0,
-              width: 28,
-              height: 28,
-              borderRadius: "50%",
-              background: "var(--bg-card)",
-              border: "2px solid var(--border-bright)",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Edit size={12} color="var(--text)" />
-          </button>
-        </div>
-        <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 600, color: "var(--text)" }}>{currentUser.name}</div>
-        <div style={{ fontSize: 13, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 4 }}>{currentUser.handle}</div>
-      </div>
-
-      {/* Stats — Meals + Friends */}
-      <div style={{ display: "flex", padding: "0 20px 16px", gap: 12, flexShrink: 0 }}>
-        <StatTile icon={<Utensils size={18} color="var(--amber)" />} value={currentUser.stats.meals} label="Meals" />
-        <StatTile icon={<Users size={18} color="var(--amber)" />} value={currentUser.stats.friends} label="Friends" />
-      </div>
-
-      {/* Payment methods accepted */}
-      <div style={{ padding: "0 20px 16px", flexShrink: 0 }}>
-        <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>Payment Methods Accepted</div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {paymentMethods
-            .filter((pm) => ACCEPTED_METHODS.includes(pm.id))
-            .map((pm) => (
-              <div key={pm.id} style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                padding: "6px 10px",
-                borderRadius: 999,
-                background: "var(--bg-card)",
-                border: `1px solid ${pm.color}55`,
-                color: "var(--text)",
-                fontSize: 12,
-                fontFamily: "var(--font-body)",
-                fontWeight: 500,
-              }}>
-                <span style={{
-                  width: 18,
-                  height: 18,
-                  borderRadius: 999,
-                  background: pm.color,
-                  color: "#fff",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}>
-                  {iconFor(pm.id)}
-                </span>
-                {pm.name}
-              </div>
-            ))}
-        </div>
-      </div>
-
-      {/* Privacy-toggle spend stats */}
-      <div style={{ padding: "0 20px 16px", flexShrink: 0 }}>
-        <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>Spend</div>
-        <PrivacyStatRow
-          label="Average meal spend"
-          value={`$${currentUser.stats.avgSpend}`}
-          isPublic={avgPublic}
-          onToggle={() => setAvgPublic((v) => !v)}
-        />
-        <PrivacyStatRow
-          label="Total spend (all-time)"
-          value={`$${TOTAL_SPEND}`}
-          isPublic={totalPublic}
-          onToggle={() => setTotalPublic((v) => !v)}
-        />
-      </div>
-
-      {/* Link to meal history */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "0 20px 92px" }}>
-        <button
-          onClick={() => router.push("/screen/meal-history")}
-          style={{
-            width: "100%",
-            padding: "14px 16px",
-            borderRadius: 14,
+          <div style={{
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+            width: 26,
+            height: 26,
+            borderRadius: "50%",
             background: "var(--bg-card)",
-            border: "1px solid var(--border)",
-            color: "var(--text)",
-            fontSize: 14,
-            fontFamily: "var(--font-body)",
-            fontWeight: 500,
-            cursor: "pointer",
+            border: "2px solid var(--border-bright)",
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <span>View meal history</span>
-          <span style={{ color: "var(--text-muted)", fontSize: 18 }}>›</span>
+            justifyContent: "center",
+            color: "var(--text)",
+          }}>
+            <Camera size={12} />
+          </div>
         </button>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 600, color: "var(--text)" }}>{name}</div>
+        <div style={{ fontSize: 13, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 4 }}>{handle}</div>
+        <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 4 }}>
+          Tap photo to edit
+        </div>
       </div>
+
+      <div style={{ flex: 1, overflowY: "auto", padding: "0 20px 96px" }}>
+        {/* Meals + Friends */}
+        <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+          <StatTile icon={<Utensils size={18} color="var(--amber)" />} value={currentUser.stats.meals} label="Meals" />
+          <StatTile icon={<Users size={18} color="var(--amber)" />} value={currentUser.stats.friends} label="Friends" />
+        </div>
+
+        {/* Payment methods accepted */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>Payment Methods Accepted</div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {paymentMethods
+              .filter((pm) => ACCEPTED_METHODS.includes(pm.id))
+              .map((pm) => (
+                <div key={pm.id} style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "6px 10px",
+                  borderRadius: 999,
+                  background: "var(--bg-card)",
+                  border: `1px solid ${pm.color}55`,
+                  color: "var(--text)",
+                  fontSize: 12,
+                  fontFamily: "var(--font-body)",
+                  fontWeight: 500,
+                }}>
+                  <span style={{
+                    width: 18,
+                    height: 18,
+                    borderRadius: 999,
+                    background: pm.color,
+                    color: "#fff",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}>
+                    {iconFor(pm.id)}
+                  </span>
+                  {pm.name}
+                </div>
+              ))}
+          </div>
+        </div>
+
+        {/* Stats section — visible on your own profile */}
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            Stats
+          </div>
+          <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 10 }}>
+            Only visible to others if you toggle them on in Privacy.
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <StatRow label="Average meal spend" value={`$${AVG_SPEND}`} />
+            <StatRow label="Total spend (all-time)" value={`$${TOTAL_SPEND}`} />
+            <StatRow label="Total meals" value={TOTAL_MEALS.toString()} />
+          </div>
+        </div>
+      </div>
+
+      {editOpen && (
+        <EditProfileSheet
+          initialName={name}
+          initialHandle={handle}
+          onClose={() => setEditOpen(false)}
+          onSave={(n, h) => {
+            setName(n);
+            setHandle(h);
+            setEditOpen(false);
+          }}
+        />
+      )}
+
       <HomeBottomBar />
     </div>
   );
@@ -191,48 +215,168 @@ function StatTile({ icon, value, label }: { icon: React.ReactNode; value: number
   );
 }
 
-function PrivacyStatRow({ label, value, isPublic, onToggle }: {
-  label: string;
-  value: string;
-  isPublic: boolean;
-  onToggle: () => void;
-}) {
+function StatRow({ label, value }: { label: string; value: string }) {
   return (
     <div style={{
       display: "flex",
       alignItems: "center",
-      gap: 12,
+      justifyContent: "space-between",
       padding: "12px 14px",
       borderRadius: 12,
       background: "var(--bg-card)",
       border: "1px solid var(--border)",
-      marginBottom: 8,
     }}>
-      <div style={{ flex: 1 }}>
-        <div style={{ fontSize: 13, color: "var(--text)", fontFamily: "var(--font-body)", fontWeight: 500 }}>{label}</div>
-        <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 2 }}>
-          {isPublic ? "Public — friends can see" : "Private — only you"}
-        </div>
-      </div>
+      <div style={{ fontSize: 13, color: "var(--text)", fontFamily: "var(--font-body)" }}>{label}</div>
       <div style={{ fontSize: 15, fontWeight: 700, color: "var(--amber)", fontFamily: "var(--font-body)" }}>{value}</div>
-      <button
-        onClick={onToggle}
-        aria-label={isPublic ? "Make private" : "Make public"}
-        style={{
-          width: 34,
-          height: 34,
-          borderRadius: 10,
-          background: isPublic ? "rgba(245,158,11,0.15)" : "var(--bg-raised)",
-          border: `1px solid ${isPublic ? "rgba(245,158,11,0.35)" : "var(--border)"}`,
-          color: isPublic ? "var(--amber)" : "var(--text-muted)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-        }}
-      >
-        {isPublic ? <Eye size={15} /> : <EyeOff size={15} />}
-      </button>
     </div>
   );
 }
+
+function EditProfileSheet({
+  initialName,
+  initialHandle,
+  onClose,
+  onSave,
+}: {
+  initialName: string;
+  initialHandle: string;
+  onClose: () => void;
+  onSave: (name: string, handle: string) => void;
+}) {
+  const [name, setName] = useState(initialName);
+  const [handle, setHandle] = useState(initialHandle);
+  const canSave = name.trim().length > 0 && handle.trim().length > 0;
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "absolute",
+        inset: 0,
+        background: "rgba(0,0,0,0.55)",
+        zIndex: 30,
+        display: "flex",
+        alignItems: "flex-end",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "100%",
+          background: "var(--bg-surface)",
+          borderTopLeftRadius: 22,
+          borderTopRightRadius: 22,
+          borderTop: "1px solid var(--border-bright)",
+          padding: "18px 20px 22px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 14,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: "var(--text)" }}>
+            Edit profile
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: 999,
+              background: "var(--bg-card)",
+              border: "1px solid var(--border)",
+              color: "var(--text)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+            }}
+          >
+            <X size={14} />
+          </button>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, marginBottom: 6 }}>
+          <div style={{
+            width: 78,
+            height: 78,
+            borderRadius: "50%",
+            background: "linear-gradient(135deg, var(--amber), var(--orange))",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            border: "3px solid var(--amber)",
+          }}>
+            <User size={36} color="#000" strokeWidth={1.6} />
+          </div>
+          <button style={{
+            padding: "6px 12px",
+            fontSize: 11,
+            fontFamily: "var(--font-body)",
+            color: "var(--amber)",
+            background: "transparent",
+            border: "1px solid var(--amber)",
+            borderRadius: 999,
+            cursor: "pointer",
+          }}>
+            Change photo
+          </button>
+        </div>
+
+        <div>
+          <label style={{ display: "block", fontSize: 11, color: "var(--text-muted)", marginBottom: 6, fontFamily: "var(--font-body)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            Name
+          </label>
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            style={inputStyle}
+          />
+        </div>
+
+        <div>
+          <label style={{ display: "block", fontSize: 11, color: "var(--text-muted)", marginBottom: 6, fontFamily: "var(--font-body)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            Handle
+          </label>
+          <input
+            value={handle}
+            onChange={(e) => setHandle(e.target.value)}
+            style={inputStyle}
+          />
+        </div>
+
+        <button
+          disabled={!canSave}
+          onClick={() => canSave && onSave(name.trim(), handle.trim())}
+          style={{
+            width: "100%",
+            padding: "14px",
+            borderRadius: 12,
+            background: canSave ? "var(--amber)" : "var(--bg-card)",
+            color: canSave ? "#000" : "var(--text-muted)",
+            fontWeight: 700,
+            fontSize: 14,
+            border: "none",
+            cursor: canSave ? "pointer" : "not-allowed",
+            fontFamily: "var(--font-body)",
+          }}
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const inputStyle: React.CSSProperties = {
+  width: "100%",
+  padding: "12px 14px",
+  borderRadius: 10,
+  background: "var(--bg-card)",
+  border: "1px solid var(--border-bright)",
+  color: "var(--text)",
+  fontSize: 15,
+  fontFamily: "var(--font-body)",
+  outline: "none",
+};

@@ -11,7 +11,6 @@ export default function SettingsScreen() {
     {
       title: "Account",
       items: [
-        { icon: <User size={16} />, label: "Edit Profile", route: "/screen/profile" },
         { icon: <CreditCard size={16} />, label: "Payment Methods", route: "/screen/payment-methods" },
       ],
     },
@@ -27,7 +26,7 @@ export default function SettingsScreen() {
       items: [
         { icon: <Star size={16} />, label: "Rate Split the Plate" },
         { icon: <MessageSquare size={16} />, label: "Send Feedback" },
-        { icon: <FileText size={16} />, label: "Terms & Privacy" },
+        { icon: <FileText size={16} />, label: "Terms" },
       ],
     },
   ];
@@ -68,7 +67,7 @@ export default function SettingsScreen() {
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text)", fontFamily: "var(--font-body)" }}>Eli</div>
-          <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>@eli · View profile</div>
+          <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>@eli · Tap avatar there to edit</div>
         </div>
         <ChevronRight size={16} color="var(--text-muted)" />
       </div>

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { paymentMethods } from "@/lib/mock-data";
-import { Plus, Check, AlertTriangle, Wallet, Smartphone, DollarSign, Banknote } from "lucide-react";
+import { Check, AlertTriangle, Wallet, Smartphone, DollarSign, Banknote } from "lucide-react";
 import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 const iconFor = (id: string) => {
@@ -31,8 +31,9 @@ const handleFor = (id: string) => {
 
 export default function PaymentMethodsScreen() {
   const [connected, setConnected] = useState<string[]>(["applepay", "cashapp"]);
+  const [cashOn, setCashOn] = useState<boolean>(false);
 
-  const hasAny = connected.length > 0;
+  const hasAny = connected.length > 0 || cashOn;
 
   return (
     <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "56px 20px 92px" }}>
@@ -69,7 +70,8 @@ export default function PaymentMethodsScreen() {
 
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {paymentMethods.map((pm) => {
-          const isConnected = connected.includes(pm.id);
+          const isCash = pm.id === "cash";
+          const isConnected = isCash ? cashOn : connected.includes(pm.id);
           return (
             <div
               key={pm.id}
@@ -98,44 +100,78 @@ export default function PaymentMethodsScreen() {
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", fontFamily: "var(--font-body)" }}>{pm.name}</div>
                 <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
-                  {isConnected ? handleFor(pm.id) : "Not connected"}
+                  {isCash
+                    ? (cashOn ? "Accepting cash" : "Not accepting cash")
+                    : (isConnected ? handleFor(pm.id) : "Not connected")}
                 </div>
               </div>
-              <button
-                onClick={() => setConnected((c) => (c.includes(pm.id) ? c.filter((x) => x !== pm.id) : [...c, pm.id]))}
-                style={{
-                  padding: "8px 14px",
-                  borderRadius: 9,
-                  background: isConnected ? "transparent" : "var(--amber)",
-                  border: isConnected ? "1px solid rgba(22,163,74,0.4)" : "none",
-                  color: isConnected ? "#4ade80" : "#000",
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  fontFamily: "var(--font-body)",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 4,
-                }}
-              >
-                {isConnected ? (
-                  <>
-                    <Check size={12} /> Connected
-                  </>
-                ) : (
-                  "Connect"
-                )}
-              </button>
+              {isCash ? (
+                <CashToggle on={cashOn} onToggle={() => setCashOn((v) => !v)} />
+              ) : (
+                <button
+                  onClick={() => setConnected((c) => (c.includes(pm.id) ? c.filter((x) => x !== pm.id) : [...c, pm.id]))}
+                  style={{
+                    padding: "8px 14px",
+                    borderRadius: 9,
+                    background: isConnected ? "transparent" : "var(--amber)",
+                    border: isConnected ? "1px solid rgba(22,163,74,0.4)" : "none",
+                    color: isConnected ? "#4ade80" : "#000",
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    fontFamily: "var(--font-body)",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4,
+                  }}
+                >
+                  {isConnected ? (
+                    <>
+                      <Check size={12} /> Connected
+                    </>
+                  ) : (
+                    "Connect"
+                  )}
+                </button>
+              )}
             </div>
           );
         })}
       </div>
-
-      <div style={{ marginTop: 16, padding: "14px 16px", borderRadius: 12, background: "var(--bg-card)", border: "1px solid var(--border)", cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}>
-        <Plus size={18} color="var(--text-muted)" />
-        <span style={{ fontSize: 14, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>Add another method</span>
-      </div>
       <HomeBottomBar />
+    </div>
+  );
+}
+
+function CashToggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
+  return (
+    <div
+      onClick={onToggle}
+      role="switch"
+      aria-checked={on}
+      style={{
+        width: 46,
+        height: 26,
+        borderRadius: 13,
+        background: on ? "var(--amber)" : "var(--bg-raised)",
+        position: "relative",
+        cursor: "pointer",
+        transition: "background 0.2s",
+        flexShrink: 0,
+        border: on ? "none" : "1px solid var(--border-bright)",
+      }}
+    >
+      <div style={{
+        position: "absolute",
+        top: 3,
+        left: on ? 23 : 3,
+        width: 20,
+        height: 20,
+        borderRadius: "50%",
+        background: "#fff",
+        transition: "left 0.2s",
+        boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
+      }} />
     </div>
   );
 }

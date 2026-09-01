@@ -1,107 +1,127 @@
-# Split the Plate — Eli's Walkthrough Notes (2026-08-31)
+# Split the Plate — Full Walkthrough Spec (2026-08-31)
 
-Full audio walkthrough of the prototype. Locking in every change so nothing gets lost.
-
-## Onboarding / Auth
-- **Skip the intro page.** Boot straight into sign-in. Splash-loading is fine as the transition.
-- Sign-in options: **Continue with Apple**, **Continue with Google**, **Continue with Phone** (SMS code).
-- After auth: **Name + Profile Picture** setup.
-  - The "Name" field = the **username** (the app handle).
-- Then **Notifications on/off** prompt. Keep.
-
-## Global Navigation
-- **Persistent Home button at the bottom** on every screen so you can always get back.
-- Every non-home screen also needs a **back button at the top** (friends screen does this — copy that pattern everywhere).
-
-## Home Page
-- Keep friends count, splits count, and "role of the day" tile.
-- Recent splits list stays.
-- ⚠️ For now, **no in-meal / dining timeline**. Splits only track post-payment state. Anything pre-payment is out of scope for v1.
-
-## Friends
-- Search by `@handle` — keep.
-- Back button already there — keep.
-
-## New Split
-- **Remove "Add to existing split"** — makes no sense. Items are added when you scan/enter, not appended later.
-- Options are: **Scan Receipt** OR **Manual Entry**.
-
-### Scanned Receipt Screen (View Items)
-- Each item row needs **BOTH** buttons:
-  - ✏️ **Edit** (pencil) — edit item name + price → opens edit screen/modal
-  - 🗑 **Delete** — works already
-- **"Add missing item"** button must open a real add-item screen (currently does nothing).
-
-### Add People
-- Search field must actually work.
-- From the search results, you should be able to **add someone as a friend inline** (no need to backtrack to Home → Friends).
-- Once added as friend → they become selectable for this split.
-
-### How to Split
-- **Split evenly** — keep, works.
-- **Split by item:**
-  - Bill **leader** can assign any item to any person (override anyone).
-  - **Non-leaders** get a "Claim" button per item to claim their own.
-  - Leader can also just claim items for themselves.
-- **Custom** — keep, works (e.g. type $50, remainder auto-calcs).
-
-### Gamble Pay — TRIM THE LIST
-Only keep two games:
-1. **Plinko** — copy the Plinko implementation from the **old Plait system** exactly. Same feel, same behavior.
-2. **Spin the Wheel** (renamed from Roulette) — names on the wheel, even odds for now.
-   - Future idea (not now): weight the wheel by each person's item total.
-- ❌ Remove: Coin Flip, "Half off the roulette", "One lucky person pays half", "Everyone splits different". No one-off games.
-
-## Review Split
-- Shows subtotal, tax, total — keep.
-- **Tip** = per-person (each person adds their own tip on their portion). We'll revisit if leader-tip makes more sense.
-
-## Payment Methods
-- Supported: **Apple Pay, Cash App, Venmo, Zelle, PayPal, Cash**.
-- **Leader-driven flow:** payers can only choose payment methods the **leader has connected** to receive.
-  - If leader only has Zelle + Cash App → payers only see Zelle + Cash App.
-- **Onboarding requirement:** every user must connect **at least one** payment method in settings before they can create/receive splits. Nag screen if none set.
-- **Cash option:** leader can accept cash → payer hands cash IRL → leader marks that person as paid manually on their side.
-
-## Profile
-- Show: **Meals count, Friends count, Payment methods accepted**.
-- **Toggleable public/private** stats: average meal spend, total spend.
-- Public defaults: meals, friends, accepted payment methods.
-- **Meal history** — keep as a page with per-entry privacy toggle.
-- Skip "recent meals" widget on the profile itself.
-
-## Visual / UI Direction — LOCK THIS IN
-- **Use the OLD Plait UI style and color palette** exactly. Copy it over to Split the Plate.
-- **No emojis** in the UI.
-- All the same UI rules as old Plait — different app, same visual DNA.
+Canonical spec pulled from Eli's original voice note (file_856) + follow-up. This is the source of truth. If it's here, it must ship.
 
 ---
 
-## Answered by Eli (2026-08-31, voice reply)
-
-### 1. Tip = per-person ✅
-- Each person calculates their own tip based on their own split.
-- The tip is **added to their payment to the leader** (bundled in the one transfer).
-- Final review screen shows:
-  - Bill total paid off (subtotal + tax)
-  - **Total tips collected separately** so the leader knows how much extra to hand the restaurant on top of the bill.
-
-### 2. Auth — RESEARCH FIRST, then pick
-- Old Plait used **Firebase**.
-- Eli previously floated **Supabase**.
-- Decision: **do a deep dive**. Look at what big apps use — Instagram, and especially **OpenTable** (Eli wants us to "more so copy what OpenTable is using" as a general pattern for a bunch of things going forward).
-- Pick the best-in-class option based on what the big companies use, then go with that.
-- **TODO:** research subagent → recommendation.
-
-### 3. Plinko + Wheel
-- **Plinko:** pull from old Plait, reuse as-is.
-- **Wheel Spin:** Eli doesn't remember Plait having one → **likely custom build**. Must match the same visual design language as Plinko and the rest of the app.
+## ✅ Already done (locked in first pass)
+- Skip intro → Splash → Sign In direct
+- Sign In: Apple / Google / Phone
+- Profile setup: Username (= @handle) + profile pic
+- Notifications on/off prompt
+- Top-left back button on every non-home screen
+- New Split: removed "Add to existing split"
+- Item rows: Edit ✏️ + Delete 🗑, add-missing-item modal
+- Add People: working search + inline "add as friend"
+- By Item: leader assigns / others Claim
+- Gamble Pay: trimmed to Plinko + Spin the Wheel; Coin Flip + Half-Off deleted
+- Plinko ported from old Plait
+- Spin the Wheel: even for v1, weight support baked in for future item-based
+- Review: two totals (Bill Paid, Tips Collected), per-person tip
+- Payment: leader-driven method visibility, Cash added, connect-a-method banner
+- Old Plait "Culinary Editorial" theme ported (cream + warm text + brand orange)
+- No emojis in UI
 
 ---
 
-## Follow-up TODOs
-- [ ] Research subagent: OpenTable + Instagram-scale auth stack → Firebase vs Supabase vs alternatives. Deliverable: 1-page recommendation.
-- [ ] Locate old Plait repo → identify Plinko component + old UI theme files → port.
-- [ ] Design Wheel Spin component in the shared visual language.
-- [ ] Rewrite review-split screen to show `Bill Paid` and `Tips Collected` as two separate totals.
-- [ ] Note for later: Eli wants us to "copy OpenTable" as a general reference for other patterns too, not just auth. Keep this in mind for reservation-like flows if we ever add them.
+## ❌ MISSED — must fix in the next pass
+
+### Home screen — REMOVE "Role of the Day"
+- Eli explicitly said: "Role of the day, I don't like it, I don't understand what that is. Remove that. Keep it even simpler."
+- Delete the Role of the Day tile from `HomeScreen.tsx` completely. Don't hide it — delete it.
+
+### Home bottom bar — simplified nav
+- Bottom bar has ONLY two icons:
+  - 🏠 Home button (always visible everywhere)
+  - ➕ Plus button = New Split / New Meal shortcut
+- Profile lives in the **top right corner** of home (not the bottom bar).
+- Notifications icon on home should open **actual notifications**, not notification settings.
+
+### Meal Memory / Meal History — MAJOR REWRITE
+This whole section was wrong. Eli's exact spec:
+
+- **DELETE** the "Save Meal" screen — meals auto-save at the end of a split. There is no manual save step.
+- **DELETE** the Table Chat screen entirely. There's no chat in v1. The app is scan-check → split → pay. No pre-meal or during-meal features.
+- **DELETE** the meal timeline UI in Meal History. That's what was wrong.
+- **Rename** "Meal History" → **"Recent Meals"** on the home screen tile.
+
+### Meal Detail — new structure (this is the important part)
+When you open a meal from Recent Meals, you see (top → bottom):
+
+1. **Restaurant name** (auto-scanned from receipt; if scan fails, prompt user to type it during the split)
+2. **Date**
+3. **Number of people**
+4. **Photo of the receipt** (if the split was created by scanning; skip if manual entry)
+5. **Digital receipt** — list of every item and its price, subtotal, tax, total (a text version of what's in the photo, OR the only version if it was manual)
+6. **People section** — for each person on the split:
+   - Name
+   - Items assigned to them (their portion)
+   - How much they paid
+   - Which payment method they used
+   - Whether it's marked as paid or not
+     - If Cash: leader must mark received. Show "Not received yet" until leader marks it.
+7. **How it was split** — "Split Evenly" OR "Plinko results" (who lost/won) OR "Spin the Wheel results" OR "By Item" OR "Custom"
+
+### Recent Meals list (home + meal history page)
+Each row shows:
+- Restaurant name + date
+- Who was in it
+- Payment status for each person (paid / not paid)
+- The split method used
+
+That's it. No timeline. No emojis.
+
+---
+
+### Restaurant name capture during New Split
+- After scan: try to auto-detect restaurant name from the receipt.
+- If not detected: ask the user to enter it ("What restaurant is this?").
+- If manual entry (no scan): required field at the start of manual entry.
+
+---
+
+### Profile page
+- Show: Meals count, Friends count, accepted Payment Methods (chips).
+- Recent meals list on profile → **remove** (it belongs on home).
+- Meal history is a separate page (accessible from home), with per-entry public/private toggle.
+- Stats block (average meal spend, total spend, total meals) — hidden by default on profile; only visible to others if the user enables it. This is a "stats/leaderboard" section on your own profile that's togglable public.
+- **Edit profile** — accessible by tapping the profile picture, NOT from settings. Remove any "edit profile" entry from settings.
+
+### Settings
+- Payment Methods → keep here (add / remove / enable Cash toggle — cash doesn't need connecting, it's just a toggle).
+- Notifications → keep. Options:
+  - When a friend adds you to a new bill/plate
+  - Time to pay (leader can bump you if you haven't paid)
+  - Marked as paid (when leader confirms)
+  - ❌ Remove: "Camera's also in Plinko when finishes" — no notification for that (user's already in app)
+  - ❌ Remove: "Deals and promotions" — no deals in v1
+- Privacy → **all** the public/private toggles live here:
+  - Allow meal invites → Everyone / Friends only / Off
+  - Meal history visible (yes/no)
+  - Profile visible (yes/no)
+  - Location sharing (yes/no)
+  - Show average meal spend (yes/no)
+  - Show total spend (yes/no)
+  - Show total meals (yes/no)
+- Rate Split the Plate, Send Feedback, Terms → keep.
+- **DELETE** "Edit Profile" from settings — it lives on the profile page (tap avatar).
+
+### Notifications icon (from home)
+- Opens the actual notifications INBOX, not notification settings.
+
+---
+
+## 🎨 Design rules (locked)
+- Old Plait "Culinary Editorial" theme: cream `#fff8f1`, brand orange `#ab3500 → #ff6b35`, warm black text `#1e1b17`
+- Fraunces (display) + DM Sans (body)
+- **No emojis anywhere in the UI. Ever.**
+- Same UI rules as old Plait
+
+---
+
+## 🔐 Auth stack — decided
+- Firebase (matches OpenTable pattern, cheapest SMS, we have infra from old Plait)
+
+## 🎰 Games — decided
+- Plinko: ported from old Plait
+- Spin the Wheel: ported from old Plait `RouletteWheel.tsx`, even weighting v1, weight support ready

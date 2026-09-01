@@ -23,10 +23,10 @@ export default function HomeEmptyScreen() {
         <Utensils size={44} color="#000" strokeWidth={1.5} />
       </div>
       <div style={{ fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 600, color: "var(--text)", textAlign: "center", marginBottom: 12 }}>
-        Your first split awaits
+        No recent meals yet
       </div>
       <div style={{ fontSize: 14, color: "var(--text-secondary)", textAlign: "center", fontFamily: "var(--font-body)", lineHeight: 1.6, marginBottom: 32, maxWidth: 280 }}>
-        Go out with friends, scan the receipt, and Split the Plate handles the rest.
+        Scan a receipt with friends and your first split will show up in Recent Meals.
       </div>
       <button
         onClick={() => router.push("/screen/new-split")}

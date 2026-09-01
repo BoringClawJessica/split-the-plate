@@ -36,16 +36,15 @@ export const screens: Screen[] = [
   { slug: "gamble-results", title: "Results", group: "Gamble Pay" },
 
   // MEAL MEMORY
-  { slug: "save-meal", title: "Save Meal", group: "Meal Memory" },
   { slug: "meal-detail", title: "Meal Detail", group: "Meal Memory" },
-  { slug: "meal-history", title: "Meal History", group: "Meal Memory" },
-  { slug: "table-chat", title: "Table Chat", group: "Meal Memory" },
+  { slug: "meal-history", title: "Recent Meals", group: "Meal Memory" },
 
   // PROFILE & SETTINGS
   { slug: "profile", title: "Profile", group: "Profile & Settings" },
   { slug: "settings", title: "Settings", group: "Profile & Settings" },
   { slug: "payment-methods", title: "Payment Methods", group: "Profile & Settings" },
   { slug: "privacy", title: "Privacy", group: "Profile & Settings" },
+  { slug: "notifications", title: "Notifications Inbox", group: "Profile & Settings" },
   { slug: "notification-settings", title: "Notification Settings", group: "Profile & Settings" },
 
   // EDGE STATES

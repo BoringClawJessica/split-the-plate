@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { pastMeals, currentUser } from "@/lib/mock-data";
 import { useState } from "react";
-import { User, Utensils, Users, Eye, EyeOff } from "lucide-react";
+import { pastMeals, splitMethodLabels } from "@/lib/mock-data";
+import { Utensils, Eye, EyeOff } from "lucide-react";
 import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 export default function MealHistoryScreen() {
@@ -12,139 +12,150 @@ export default function MealHistoryScreen() {
     Object.fromEntries(pastMeals.map((m) => [m.id, false]))
   );
 
-  const togglePrivacy = (id: string) =>
+  const togglePrivacy = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     setPrivacy((p) => ({ ...p, [id]: !p[id] }));
+  };
 
   return (
     <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
-      <BackButton to="/screen/profile" />
+      <BackButton to="/screen/home" />
 
-      {/* Profile mini header */}
-      <div style={{
-        padding: "56px 20px 16px",
-        display: "flex",
-        alignItems: "center",
-        gap: 14,
-        borderBottom: "1px solid var(--border)",
-        flexShrink: 0,
-      }}>
-        <div style={{
-          width: 60,
-          height: 60,
-          borderRadius: "50%",
-          background: "linear-gradient(135deg, var(--amber), var(--orange))",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          border: "3px solid var(--amber)",
-        }}>
-          <User size={28} color="#000" strokeWidth={1.6} />
+      <div style={{ padding: "56px 20px 12px", flexShrink: 0 }}>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 600, color: "var(--text)" }}>
+          Recent Meals
         </div>
-        <div>
-          <div style={{ fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 600, color: "var(--text)" }}>{currentUser.name}</div>
-          <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>{currentUser.stats.meals} meals · ${currentUser.stats.avgSpend} avg spend</div>
+        <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 4 }}>
+          {pastMeals.length} meals · tap any to open
         </div>
       </div>
 
-      {/* Stats row */}
-      <div style={{ display: "flex", padding: "14px 20px", gap: 12, borderBottom: "1px solid var(--border)", flexShrink: 0 }}>
-        <MiniStat icon={<Utensils size={16} color="var(--amber)" />} value={currentUser.stats.meals} label="Meals" />
-        <MiniStat icon={<Users size={16} color="var(--amber)" />} value={currentUser.stats.friends} label="Friends" />
-        <MiniStat icon={<span style={{ color: "var(--amber)", fontSize: 14, fontWeight: 700 }}>$</span>} value={currentUser.stats.avgSpend} label="Avg Spend" />
-      </div>
-
-      {/* Feed */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "12px 20px 92px" }}>
-        <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-          Meal History
-        </div>
+      <div style={{ flex: 1, overflowY: "auto", padding: "8px 20px 96px" }}>
         {pastMeals.map((meal) => {
           const isPublic = privacy[meal.id];
+          const paidCount = meal.people.filter((p) => p.status === "paid").length;
+          const total = meal.people.length;
+          const allPaid = paidCount === total;
+
           return (
             <div
               key={meal.id}
+              onClick={() => router.push("/screen/meal-detail")}
               style={{
                 padding: "14px",
                 borderRadius: 16,
                 background: "var(--bg-card)",
                 border: "1px solid var(--border)",
-                marginBottom: 10,
+                marginBottom: 12,
+                cursor: "pointer",
               }}
             >
-              <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+              {/* Top row: restaurant + date + privacy */}
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 12, marginBottom: 10 }}>
                 <div style={{
-                  width: 52,
-                  height: 52,
-                  borderRadius: 14,
+                  width: 44,
+                  height: 44,
+                  borderRadius: 12,
                   background: "var(--bg-raised)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  flexShrink: 0,
                   color: "var(--amber)",
+                  flexShrink: 0,
                 }}>
-                  <Utensils size={22} strokeWidth={1.6} />
+                  <Utensils size={20} strokeWidth={1.6} />
                 </div>
-                <div
-                  onClick={() => router.push("/screen/meal-detail")}
-                  style={{ flex: 1, cursor: "pointer" }}
-                >
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", fontFamily: "var(--font-body)", marginBottom: 3 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text)", fontFamily: "var(--font-body)" }}>
                     {meal.restaurant}
                   </div>
-                  <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 6 }}>
-                    {meal.date} · {meal.party.length} people
-                  </div>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <div style={{ padding: "3px 8px", borderRadius: 6, background: "rgba(22,163,74,0.15)", fontSize: 10, color: "#4ade80", fontFamily: "var(--font-body)" }}>
-                      paid
-                    </div>
-                    <div style={{ padding: "3px 8px", borderRadius: 6, background: "var(--bg-raised)", fontSize: 10, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
-                      {meal.split_method}
-                    </div>
+                  <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 2 }}>
+                    {meal.date}
                   </div>
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 6 }}>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 14, fontWeight: 700, color: "var(--text)", fontFamily: "var(--font-body)" }}>${meal.total.toFixed(2)}</div>
-                    <div style={{ fontSize: 11, color: "var(--amber)", fontFamily: "var(--font-body)" }}>your ${meal.your_share.toFixed(2)}</div>
-                  </div>
-                  <button
-                    onClick={() => togglePrivacy(meal.id)}
-                    aria-label={isPublic ? "Make private" : "Make public"}
-                    title={isPublic ? "Public — friends can see" : "Private — only you"}
-                    style={{
-                      width: 30,
-                      height: 30,
-                      borderRadius: 8,
-                      background: isPublic ? "rgba(245,158,11,0.15)" : "var(--bg-raised)",
-                      border: `1px solid ${isPublic ? "rgba(245,158,11,0.35)" : "var(--border)"}`,
-                      color: isPublic ? "var(--amber)" : "var(--text-muted)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer",
-                    }}
-                  >
-                    {isPublic ? <Eye size={13} /> : <EyeOff size={13} />}
-                  </button>
+                <button
+                  onClick={(e) => togglePrivacy(meal.id, e)}
+                  aria-label={isPublic ? "Make private" : "Make public"}
+                  title={isPublic ? "Public — friends can see" : "Private — only you"}
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 8,
+                    background: isPublic ? "rgba(245,158,11,0.15)" : "var(--bg-raised)",
+                    border: `1px solid ${isPublic ? "rgba(245,158,11,0.35)" : "var(--border)"}`,
+                    color: isPublic ? "var(--amber)" : "var(--text-muted)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    flexShrink: 0,
+                  }}
+                >
+                  {isPublic ? <Eye size={13} /> : <EyeOff size={13} />}
+                </button>
+              </div>
+
+              {/* Middle row: avatar stack + names */}
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                <div style={{ display: "flex" }}>
+                  {meal.people.slice(0, 4).map((p, idx) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      key={p.id}
+                      src={p.avatar}
+                      alt={p.name}
+                      style={{
+                        width: 26,
+                        height: 26,
+                        borderRadius: "50%",
+                        border: "2px solid var(--bg-card)",
+                        marginLeft: idx === 0 ? 0 : -8,
+                        background: "var(--bg-raised)",
+                      }}
+                    />
+                  ))}
                 </div>
+                <div style={{
+                  fontSize: 12,
+                  color: "var(--text-secondary)",
+                  fontFamily: "var(--font-body)",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}>
+                  {meal.people.map((p) => p.name).join(", ")}
+                </div>
+              </div>
+
+              {/* Bottom row: split method tag + payment status pill */}
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <span style={{
+                  padding: "4px 10px",
+                  borderRadius: 8,
+                  background: "var(--bg-raised)",
+                  fontSize: 11,
+                  color: "var(--text-muted)",
+                  fontFamily: "var(--font-body)",
+                }}>
+                  {splitMethodLabels[meal.splitMethod]}
+                </span>
+                <span style={{
+                  padding: "4px 10px",
+                  borderRadius: 8,
+                  background: allPaid ? "rgba(22,163,74,0.15)" : "rgba(245,158,11,0.15)",
+                  fontSize: 11,
+                  color: allPaid ? "#4ade80" : "var(--amber)",
+                  fontFamily: "var(--font-body)",
+                  fontWeight: 500,
+                }}>
+                  {allPaid ? "All paid" : `Waiting on ${total - paidCount}`}
+                </span>
               </div>
             </div>
           );
         })}
       </div>
       <HomeBottomBar />
-    </div>
-  );
-}
-
-function MiniStat({ icon, value, label }: { icon: React.ReactNode; value: number | string; label: string }) {
-  return (
-    <div style={{ flex: 1, textAlign: "center" }}>
-      <div style={{ marginBottom: 2, display: "flex", justifyContent: "center", height: 20, alignItems: "center" }}>{icon}</div>
-      <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text)", fontFamily: "var(--font-body)" }}>{value}</div>
-      <div style={{ fontSize: 9, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>{label}</div>
     </div>
   );
 }
