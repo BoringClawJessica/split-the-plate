@@ -19,8 +19,8 @@
  * gradient primary button.
  */
 
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { currentUser, friends, receiptTotal } from "@/lib/mock-data";
 
 // ---- Participants (mock) ------------------------------------------------
@@ -108,7 +108,19 @@ const TEXT_WARM_SOFT = "#5c4a2f";
 type Phase = "ready" | "dropping" | "settled";
 
 export default function PlinkoScreen() {
+  return (
+    <Suspense fallback={<div style={{ height: "100%", background: "var(--bg-base)" }} />}>
+      <PlinkoInner />
+    </Suspense>
+  );
+}
+
+function PlinkoInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const mode = searchParams.get("mode") === "placement" ? "placement" : "loser";
+  const balls = Math.max(1, Math.min(5, parseInt(searchParams.get("balls") || "1", 10) || 1));
+  const modeLabel = mode === "placement" ? "Placement" : "Loser pays";
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const engineRef = useRef<import("matter-js").Engine | null>(null);
   const ballBodyRef = useRef<import("matter-js").Body | null>(null);
@@ -345,8 +357,26 @@ export default function PlinkoScreen() {
     <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
       {/* Header */}
       <div style={{ padding: "20px 20px 10px", flexShrink: 0 }}>
-        <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 600, color: "var(--text)" }}>
-          Plinko
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 600, color: "var(--text)" }}>
+            Plinko
+          </div>
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "4px 10px",
+            borderRadius: 999,
+            background: "rgba(234,88,12,0.10)",
+            border: "1px solid rgba(234,88,12,0.35)",
+            fontSize: 10,
+            fontFamily: "var(--font-body)",
+            color: "var(--orange)",
+            fontWeight: 700,
+            letterSpacing: 0.3,
+          }}>
+            Mode: {modeLabel} · {balls} ball{balls === 1 ? "" : "s"}
+          </div>
         </div>
         <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 3 }}>
           {phase === "ready"

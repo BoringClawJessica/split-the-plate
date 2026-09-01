@@ -50,7 +50,7 @@ export default function SplitMethodScreen() {
 
   return (
     <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "56px 20px 92px" }}>
-      <BackButton to="/screen/add-people" />
+      <BackButton to="/screen/items-detected" />
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 600, color: "var(--text)" }}>
           How to split?
@@ -124,7 +124,7 @@ export default function SplitMethodScreen() {
           </button>
         ))}
       </div>
-      <HomeBottomBar />
+      <HomeBottomBar hidden />
     </div>
   );
 }

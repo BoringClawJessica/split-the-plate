@@ -5,8 +5,6 @@ import { useState } from "react";
 import { currentUser, paymentMethods } from "@/lib/mock-data";
 import {
   Settings,
-  Users,
-  Utensils,
   User,
   Wallet,
   Smartphone,
@@ -48,7 +46,7 @@ export default function ProfileScreen() {
       <BackButton to="/screen/home" />
 
       {/* Settings shortcut */}
-      <div style={{ padding: "14px 20px 4px", display: "flex", justifyContent: "flex-end", flexShrink: 0 }}>
+      <div style={{ padding: "14px 20px 0", display: "flex", justifyContent: "flex-end", flexShrink: 0 }}>
         <button
           onClick={() => router.push("/screen/settings")}
           style={{
@@ -68,14 +66,14 @@ export default function ProfileScreen() {
       </div>
 
       {/* Profile header — tap avatar to edit */}
-      <div style={{ padding: "0 20px 16px", flexShrink: 0, textAlign: "center" }}>
+      <div style={{ padding: "0 20px 10px", flexShrink: 0, textAlign: "center" }}>
         <button
           onClick={() => setEditOpen(true)}
           aria-label="Edit profile"
           style={{
             position: "relative",
             display: "inline-block",
-            marginBottom: 12,
+            marginBottom: 8,
             background: "none",
             border: "none",
             padding: 0,
@@ -83,8 +81,8 @@ export default function ProfileScreen() {
           }}
         >
           <div style={{
-            width: 88,
-            height: 88,
+            width: 84,
+            height: 84,
             borderRadius: "50%",
             background: "linear-gradient(135deg, var(--amber), var(--orange))",
             display: "flex",
@@ -93,14 +91,14 @@ export default function ProfileScreen() {
             border: "4px solid var(--amber)",
             boxShadow: "0 0 24px rgba(245,158,11,0.3)",
           }}>
-            <User size={40} color="#000" strokeWidth={1.6} />
+            <User size={38} color="#000" strokeWidth={1.6} />
           </div>
           <div style={{
             position: "absolute",
             bottom: 0,
             right: 0,
-            width: 26,
-            height: 26,
+            width: 24,
+            height: 24,
             borderRadius: "50%",
             background: "var(--bg-card)",
             border: "2px solid var(--border-bright)",
@@ -109,27 +107,32 @@ export default function ProfileScreen() {
             justifyContent: "center",
             color: "var(--text)",
           }}>
-            <Camera size={12} />
+            <Camera size={11} />
           </div>
         </button>
-        <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 600, color: "var(--text)" }}>{name}</div>
-        <div style={{ fontSize: 13, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 4 }}>{handle}</div>
-        <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 4 }}>
-          Tap photo to edit
-        </div>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--text)", marginTop: 2 }}>{name}</div>
+        <div style={{ fontSize: 13, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 2 }}>{handle}</div>
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", padding: "0 20px 96px" }}>
-        {/* Meals + Friends */}
-        <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
-          <StatTile icon={<Utensils size={18} color="var(--amber)" />} value={currentUser.stats.meals} label="Meals" />
-          <StatTile icon={<Users size={18} color="var(--amber)" />} value={currentUser.stats.friends} label="Friends" />
+        {/* Meals + Friends (Instagram-style tight row) */}
+        <div style={{
+          display: "flex",
+          gap: 0,
+          marginBottom: 14,
+          padding: "12px 0",
+          borderTop: "1px solid var(--border)",
+          borderBottom: "1px solid var(--border)",
+        }}>
+          <IgStat value={currentUser.stats.meals} label="Meals" />
+          <div style={{ width: 1, background: "var(--border)" }} />
+          <IgStat value={currentUser.stats.friends} label="Friends" />
         </div>
 
         {/* Payment methods accepted */}
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>Payment Methods Accepted</div>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <div style={{ marginBottom: 14 }}>
+          <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em" }}>Payment Methods Accepted</div>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
             {paymentMethods
               .filter((pm) => ACCEPTED_METHODS.includes(pm.id))
               .map((pm) => (
@@ -166,13 +169,13 @@ export default function ProfileScreen() {
 
         {/* Stats section — visible on your own profile */}
         <div style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>
             Stats
           </div>
-          <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 10 }}>
+          <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 8 }}>
             Only visible to others if you toggle them on in Privacy.
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             <StatRow label="Average meal spend" value={`$${AVG_SPEND}`} />
             <StatRow label="Total spend (all-time)" value={`$${TOTAL_SPEND}`} />
             <StatRow label="Total meals" value={TOTAL_MEALS.toString()} />
@@ -198,19 +201,15 @@ export default function ProfileScreen() {
   );
 }
 
-function StatTile({ icon, value, label }: { icon: React.ReactNode; value: number | string; label: string }) {
+function IgStat({ value, label }: { value: number | string; label: string }) {
   return (
     <div style={{
       flex: 1,
       textAlign: "center",
-      padding: "14px 8px",
-      borderRadius: 14,
-      background: "var(--bg-card)",
-      border: "1px solid var(--border)",
+      padding: "2px 8px",
     }}>
-      <div style={{ marginBottom: 6, display: "flex", justifyContent: "center" }}>{icon}</div>
       <div style={{ fontSize: 20, fontWeight: 700, color: "var(--text)", fontFamily: "var(--font-body)" }}>{value}</div>
-      <div style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>{label}</div>
+      <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 2 }}>{label}</div>
     </div>
   );
 }
@@ -221,7 +220,7 @@ function StatRow({ label, value }: { label: string; value: string }) {
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
-      padding: "12px 14px",
+      padding: "10px 14px",
       borderRadius: 12,
       background: "var(--bg-card)",
       border: "1px solid var(--border)",

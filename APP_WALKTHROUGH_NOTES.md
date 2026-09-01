@@ -125,3 +125,59 @@ That's it. No timeline. No emojis.
 ## 🎰 Games — decided
 - Plinko: ported from old Plait
 - Spin the Wheel: ported from old Plait `RouletteWheel.tsx`, even weighting v1, weight support ready
+
+---
+
+# 🔁 Second-pass walkthrough feedback (2026-08-31, voice note file_860)
+
+## Verdict
+- Meal detail, Recent Meals, Profile, Payment Methods, Privacy all approved.
+- "Feels like a good start." Move forward with the rest.
+
+## Flow reorder — New Split
+- **New order:** Add People FIRST, then Scan Receipt / Manual Entry, then Review Items, then assign / split method.
+- Rationale: once people are set up, they can self-claim items during review.
+- Eli half-flip-flopped mid-note ("actually never mind, keep the same flow") — but the intent stands: assigning items after people already exist is what he wants. Ship the new order.
+
+## Home button behavior during a split
+- **Hide the bottom Home button** while user is inside an in-progress split flow (scan → items → add people → split method → gamble → review → payment).
+- Home button reappears once the split is completed (post-payment) or if user backs out via the top-left Back button.
+- Rationale: prevents accidentally abandoning a scan mid-flow.
+
+## Plinko — MORE settings (before drop)
+Port all the old Plait Plinko settings, not just single-ball loser-pays:
+- Number of balls to drop (each person drops their own ball, or multi-ball)
+- Pay-by-placement mode: 1st place pays X%, 2nd Y%, 3rd Z%, etc.
+- Loser-pays-all (current default)
+- Any other modes old Plait supported
+Pre-drop settings screen before the ball animation.
+
+## Spin the Wheel — MORE settings (before spin)
+- Per-person slice count: user can set how many times each person appears on the wheel.
+  - Example: Eli x2, Tyler x1, Sofia x1 → 4 slices total, Eli has 50% chance.
+- Live percent chance shown next to each name as they adjust counts.
+- Even mode stays the default.
+
+## Review & Confirm → Payment split into phases
+Right now Review & Confirm goes straight to payment handoff. Break it up:
+
+1. **Review & Confirm** — shows subtotal, tax, total, everyone's share (no tip yet).
+2. **Add Your Tip** phase — each person individually:
+   - Sees their share of the bill (e.g. "You owe $10")
+   - Picks tip % (15 / 18 / 20 / 25 / custom) on THEIR share only
+   - Example: $10 share + 20% tip = they pay $12 total
+   - Different people can pick different tip %s
+3. **Payment** — each person sends their (share + their tip) via their chosen method to the leader.
+4. **Leader dashboard** — running total of:
+   - Bill paid so far
+   - Tips collected so far (updates live as people submit)
+   - Who's paid, who hasn't
+   - For cash payments: leader hits a **Confirm** button when they receive cash IRL.
+   - For Venmo/CashApp/Zelle/PayPal/Apple Pay: shows "Paid" / "Pending" status.
+
+## Future note (not v1, but Eli called it out)
+- Eventually: assigning items to specific people should be its own step where what-you-ate ≠ what-you-paid. For now the current 3 split modes (evenly / by item / custom) are fine.
+
+## Nitpick / defer
+- Profile page has "too much empty space for meals/friends" — Eli wants an Instagram-style tighter feel. Not blocking. Tighten if easy.
+

@@ -19,8 +19,8 @@
  */
 
 import { motion, useAnimationControls } from "framer-motion";
-import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useMemo, useState } from "react";
 import { currentUser, friends, receiptTotal } from "@/lib/mock-data";
 
 // ---- Participants (mock) ------------------------------------------------
@@ -78,25 +78,60 @@ function buildArcs(count: number, weights?: number[]): Arc[] {
 // ------------------------------------------------------------------------
 
 export default function RouletteScreen() {
+  return (
+    <Suspense fallback={<div style={{ height: "100%", background: "var(--bg-base)" }} />}>
+      <RouletteInner />
+    </Suspense>
+  );
+}
+
+function parseCounts(raw: string | null): Record<string, number> {
+  if (!raw) return {};
+  const out: Record<string, number> = {};
+  for (const part of raw.split(",")) {
+    const [k, v] = part.split(":");
+    if (!k) continue;
+    const n = Math.max(1, Math.min(5, parseInt(v || "1", 10) || 1));
+    out[k.trim().toLowerCase()] = n;
+  }
+  return out;
+}
+
+function RouletteInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const countsMap = parseCounts(searchParams.get("counts"));
   const controls = useAnimationControls();
   const [spinning, setSpinning] = useState(false);
   const [winnerIdx, setWinnerIdx] = useState<number | null>(null);
   const [rotation, setRotation] = useState(0);
 
-  const arcs = useMemo(() => buildArcs(PEOPLE.length, WEIGHTS), []);
+  // Slice counts per person (default 1 each). Sum > PEOPLE.length -> weighted slices.
+  const perPersonCounts = useMemo(
+    () => PEOPLE.map((p) => countsMap[p.name.toLowerCase()] ?? 1),
+    [countsMap],
+  );
+  const totalSlices = perPersonCounts.reduce((s, n) => s + n, 0);
+  const isWeighted = perPersonCounts.some((n) => n !== 1);
+  const effectiveWeights = isWeighted ? perPersonCounts : WEIGHTS;
+
+  const arcs = useMemo(
+    () => buildArcs(PEOPLE.length, effectiveWeights),
+    [effectiveWeights],
+  );
 
   const spin = async () => {
     if (spinning) return;
     setSpinning(true);
     setWinnerIdx(null);
 
-    // Pick winner (uniform for v1; weighted later)
-    const totalWeight = WEIGHTS ? WEIGHTS.reduce((a, b) => a + b, 0) : PEOPLE.length;
+    // Pick winner (weighted by slice counts if provided)
+    const weights = effectiveWeights ?? new Array(PEOPLE.length).fill(1);
+    const totalWeight = weights.reduce((a, b) => a + b, 0);
     let r = Math.random() * totalWeight;
     let picked = 0;
     for (let i = 0; i < PEOPLE.length; i++) {
-      const w = WEIGHTS ? WEIGHTS[i] : 1;
+      const w = weights[i];
       if (r < w) { picked = i; break; }
       r -= w;
     }
@@ -129,13 +164,32 @@ export default function RouletteScreen() {
   const winner = winnerIdx != null ? PEOPLE[winnerIdx] : null;
   const billTotal = receiptTotal * 1.08;
   const evenPct = 100 / PEOPLE.length;
+  const modeLabel = isWeighted ? `Weighted · ${totalSlices} slices` : "Even";
 
   return (
     <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
       {/* Header */}
       <div style={{ padding: "20px 20px 10px", flexShrink: 0 }}>
-        <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 600, color: "var(--text)" }}>
-          Spin the Wheel
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 600, color: "var(--text)" }}>
+            Spin the Wheel
+          </div>
+          <div style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "4px 10px",
+            borderRadius: 999,
+            background: "rgba(234,88,12,0.10)",
+            border: "1px solid rgba(234,88,12,0.35)",
+            fontSize: 10,
+            fontFamily: "var(--font-body)",
+            color: "var(--orange)",
+            fontWeight: 700,
+            letterSpacing: 0.3,
+          }}>
+            Mode: {modeLabel}
+          </div>
         </div>
         <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 3 }}>
           {spinning
@@ -243,8 +297,8 @@ export default function RouletteScreen() {
       <div style={{ padding: "6px 20px 10px", display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center", flexShrink: 0 }}>
         {PEOPLE.map((p, i) => {
           const isWinner = winnerIdx === i;
-          const pct = WEIGHTS
-            ? (WEIGHTS[i] / WEIGHTS.reduce((a, b) => a + b, 0)) * 100
+          const pct = effectiveWeights
+            ? (effectiveWeights[i] / effectiveWeights.reduce((a, b) => a + b, 0)) * 100
             : evenPct;
           return (
             <div

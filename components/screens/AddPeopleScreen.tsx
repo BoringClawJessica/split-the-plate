@@ -1,15 +1,26 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { friends as friendsSeed, currentUser } from "@/lib/mock-data";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { Search, UserPlus, Check } from "lucide-react";
 import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 type Friend = { id: string; name: string; handle?: string; avatar: string };
 
 export default function AddPeopleScreen() {
+  return (
+    <Suspense fallback={<div style={{ height: "100%", background: "var(--bg-base)" }} />}>
+      <AddPeopleInner />
+    </Suspense>
+  );
+}
+
+function AddPeopleInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next") === "manual" ? "manual" : "scan";
+  const nextRoute = next === "manual" ? "/screen/items-detected" : "/screen/camera-scan";
   const [friends, setFriends] = useState<Friend[]>(
     friendsSeed.map((f) => ({ id: f.id, name: f.name, handle: f.handle, avatar: f.avatar }))
   );
@@ -59,7 +70,7 @@ export default function AddPeopleScreen() {
 
   return (
     <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
-      <BackButton to="/screen/items-detected" />
+      <BackButton to="/screen/new-split" />
       <div style={{ padding: "56px 20px 12px", flexShrink: 0 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--text)" }}>
           Who&apos;s splitting?
@@ -149,9 +160,9 @@ export default function AddPeopleScreen() {
         )}
       </div>
 
-      <div style={{ padding: "16px 20px 92px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", flexShrink: 0 }}>
+      <div style={{ padding: "16px 20px 24px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", flexShrink: 0 }}>
         <button
-          onClick={() => router.push("/screen/split-method")}
+          onClick={() => router.push(nextRoute)}
           disabled={selected.length < 1}
           style={{
             width: "100%",
@@ -166,10 +177,10 @@ export default function AddPeopleScreen() {
             fontFamily: "var(--font-body)",
           }}
         >
-          Next &mdash; Choose Split Method
+          {next === "manual" ? "Next \u2014 Enter Items" : "Next \u2014 Scan Receipt"}
         </button>
       </div>
-      <HomeBottomBar />
+      <HomeBottomBar hidden />
     </div>
   );
 }

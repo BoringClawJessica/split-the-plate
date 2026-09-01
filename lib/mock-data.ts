@@ -272,6 +272,60 @@ export const receiptTotal = receiptItems.reduce((s, i) => s + i.price, 0); // 18
 // Scanned restaurant name mock — surfaces on ItemsDetected
 export const scannedRestaurantName = "Blue Plate Diner";
 
+// Mock: the current user's per-person share of the current in-progress split.
+// Used by the tip-phase screen. Kept as a stable number for prototype math.
+export const currentUserShare = 12.5;
+
+// Mock leader dashboard participants for the LeaderDashboard screen.
+export interface LeaderDashboardParticipant {
+  id: string;
+  name: string;
+  avatar: string;
+  share: number;    // bill share (pre-tip)
+  tip: number;      // their chosen tip amount
+  paymentMethodId: string;
+  status: PaymentStatus;
+}
+
+export const leaderDashboardParticipants: LeaderDashboardParticipant[] = [
+  {
+    id: currentUser.id,
+    name: "Eli (you)",
+    avatar: currentUser.avatar,
+    share: 12.5,
+    tip: 2.5,
+    paymentMethodId: "applepay",
+    status: "paid",
+  },
+  {
+    id: friends[0].id,
+    name: "Sofia",
+    avatar: friends[0].avatar,
+    share: 12.5,
+    tip: 2.25,
+    paymentMethodId: "venmo",
+    status: "paid",
+  },
+  {
+    id: friends[1].id,
+    name: "Marcus",
+    avatar: friends[1].avatar,
+    share: 12.5,
+    tip: 3.13,
+    paymentMethodId: "cashapp",
+    status: "not_paid",
+  },
+  {
+    id: friends[2].id,
+    name: "Jade",
+    avatar: friends[2].avatar,
+    share: 12.5,
+    tip: 2,
+    paymentMethodId: "cash",
+    status: "awaiting_cash",
+  },
+];
+
 export const gambleModes: {
   id: string;
   name: string;

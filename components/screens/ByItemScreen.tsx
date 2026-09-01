@@ -202,7 +202,7 @@ export default function ByItemScreen({ isLeader: isLeaderProp }: { isLeader?: bo
         })}
       </div>
 
-      <div style={{ padding: "16px 20px 92px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", flexShrink: 0 }}>
+      <div style={{ padding: "16px 20px 24px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", flexShrink: 0 }}>
         <button
           onClick={() => router.push("/screen/review-confirm")}
           style={{
@@ -221,7 +221,7 @@ export default function ByItemScreen({ isLeader: isLeaderProp }: { isLeader?: bo
           Review Split
         </button>
       </div>
-      <HomeBottomBar />
+      <HomeBottomBar hidden />
     </div>
   );
 }

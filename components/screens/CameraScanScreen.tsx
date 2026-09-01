@@ -155,7 +155,7 @@ export default function CameraScanScreen() {
           </div>
         )}
       </div>
-      <HomeBottomBar />
+      <HomeBottomBar hidden />
     </div>
   );
 }

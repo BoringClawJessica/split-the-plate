@@ -157,7 +157,7 @@ export default function GambleResultsScreen() {
         </div>
       </div>
 
-      <div style={{ padding: "16px 20px 92px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", flexShrink: 0 }}>
+      <div style={{ padding: "16px 20px 24px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", flexShrink: 0 }}>
         <button
           onClick={() => router.push("/screen/meal-detail")}
           style={{
@@ -170,7 +170,7 @@ export default function GambleResultsScreen() {
           Send Requests
         </button>
       </div>
-      <HomeBottomBar />
+      <HomeBottomBar hidden />
     </div>
   );
 }

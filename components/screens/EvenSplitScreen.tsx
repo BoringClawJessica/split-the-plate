@@ -92,8 +92,7 @@ export default function EvenSplitScreen() {
           Confirm Split
         </button>
       </div>
-      <div style={{ height: 80, flexShrink: 0 }} />
-      <HomeBottomBar />
+      <HomeBottomBar hidden />
     </div>
   );
 }

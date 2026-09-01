@@ -114,8 +114,7 @@ export default function CustomSplitScreen() {
           {balanced ? "Review Split" : `Balance amounts first ($${Math.abs(remaining).toFixed(2)} left)`}
         </button>
       </div>
-      <div style={{ height: 80, flexShrink: 0 }} />
-      <HomeBottomBar />
+      <HomeBottomBar hidden />
     </div>
   );
 }

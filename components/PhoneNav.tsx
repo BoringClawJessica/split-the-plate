@@ -36,8 +36,9 @@ export function BackButton({ to }: { to?: string }) {
   );
 }
 
-export function HomeBottomBar() {
+export function HomeBottomBar({ hidden = false }: { hidden?: boolean } = {}) {
   const router = useRouter();
+  if (hidden) return null;
   return (
     <div
       style={{

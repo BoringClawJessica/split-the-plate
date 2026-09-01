@@ -19,19 +19,23 @@ export const screens: Screen[] = [
 
   // NEW SPLIT
   { slug: "new-split", title: "New Split", group: "New Split" },
+  { slug: "add-people", title: "Add People", group: "New Split" },
   { slug: "camera-scan", title: "Scan Receipt", group: "New Split" },
   { slug: "items-detected", title: "Items Detected", group: "New Split" },
-  { slug: "add-people", title: "Add People", group: "New Split" },
   { slug: "split-method", title: "Split Method", group: "New Split" },
   { slug: "by-item", title: "By Item", group: "New Split" },
   { slug: "custom-split", title: "Custom Split", group: "New Split" },
   { slug: "even-split", title: "Even Split", group: "New Split" },
   { slug: "review-confirm", title: "Review & Confirm", group: "New Split" },
+  { slug: "tip-phase", title: "Add Your Tip", group: "New Split" },
   { slug: "payment-handoff", title: "Payment Handoff", group: "New Split" },
+  { slug: "leader-dashboard", title: "Leader Dashboard", group: "New Split" },
 
   // GAMBLE PAY
   { slug: "gamble-picker", title: "Gamble Mode", group: "Gamble Pay" },
+  { slug: "plinko-settings", title: "Plinko Settings", group: "Gamble Pay" },
   { slug: "plinko", title: "Plinko", group: "Gamble Pay" },
+  { slug: "roulette-settings", title: "Wheel Settings", group: "Gamble Pay" },
   { slug: "roulette", title: "Spin the Wheel", group: "Gamble Pay" },
   { slug: "gamble-results", title: "Results", group: "Gamble Pay" },
 

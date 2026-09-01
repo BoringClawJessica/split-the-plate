@@ -6,8 +6,8 @@ import { Circle, Target, AlertTriangle } from "lucide-react";
 import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 const routeMap: Record<string, string> = {
-  plinko: "/screen/plinko",
-  roulette: "/screen/roulette",
+  plinko: "/screen/plinko-settings",
+  roulette: "/screen/roulette-settings",
 };
 
 const riskColors: Record<string, string> = {
@@ -25,7 +25,7 @@ export default function GamblePickerScreen() {
   const router = useRouter();
 
   return (
-    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "56px 20px 92px" }}>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "56px 20px 24px" }}>
       <BackButton to="/screen/split-method" />
       <div style={{ marginBottom: 8 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 600, color: "var(--text)" }}>
@@ -101,7 +101,7 @@ export default function GamblePickerScreen() {
           </button>
         ))}
       </div>
-      <HomeBottomBar />
+      <HomeBottomBar hidden />
     </div>
   );
 }

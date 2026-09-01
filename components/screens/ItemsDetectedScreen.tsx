@@ -174,7 +174,7 @@ export default function ItemsDetectedScreen() {
           <span style={{ fontSize: 16, fontWeight: 700, color: "var(--amber)", fontFamily: "var(--font-body)" }}>${total.toFixed(2)}</span>
         </div>
         <button
-          onClick={() => router.push("/screen/add-people")}
+          onClick={() => router.push("/screen/split-method")}
           style={{
             width: "100%",
             padding: "15px",
@@ -188,7 +188,7 @@ export default function ItemsDetectedScreen() {
             fontFamily: "var(--font-body)",
           }}
         >
-          Looks good &mdash; Add people
+          Looks good &mdash; Choose Split Method
         </button>
       </div>
 
@@ -203,7 +203,7 @@ export default function ItemsDetectedScreen() {
         />
       )}
 
-      <HomeBottomBar />
+      <HomeBottomBar hidden />
     </div>
   );
 }

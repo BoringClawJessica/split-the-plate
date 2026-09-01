@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { paymentMethods } from "@/lib/mock-data";
 import { CheckCircle2, Banknote, Wallet, Smartphone, DollarSign, HandCoins } from "lucide-react";
 import { BackButton, HomeBottomBar } from "../PhoneNav";
@@ -33,27 +34,39 @@ const handleFor = (id: string) => {
 };
 
 export default function PaymentHandoffScreen() {
+  return (
+    <Suspense fallback={<div style={{ height: "100%", background: "var(--bg-base)" }} />}>
+      <PaymentHandoffInner />
+    </Suspense>
+  );
+}
+
+function PaymentHandoffInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const amount = parseFloat(searchParams.get("amount") || "0") || 14.55;
   const [selected, setSelected] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [cashConfirmed, setCashConfirmed] = useState(false);
 
   const availableMethods = paymentMethods.filter((pm) => LEADER_ENABLED.includes(pm.id));
+  const methodName = (id: string | null) => availableMethods.find((m) => m.id === id)?.name ?? "";
 
   if (sent) {
     const wasCash = selected === "cash";
     return (
       <div style={{ position: "relative", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "32px 28px", background: "var(--bg-base)" }}>
-        <BackButton to="/screen/review-confirm" />
+        <BackButton to="/screen/tip-phase" />
         <CheckCircle2 size={72} color="var(--amber)" strokeWidth={1.6} />
         <div style={{ marginTop: 20, fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 600, color: "var(--text)", marginBottom: 12, textAlign: "center" }}>
-          {wasCash ? (cashConfirmed ? "Marked as paid" : "Hand cash to leader") : "Request sent"}
+          {wasCash ? (cashConfirmed ? "Marked as paid" : "Hand cash to leader") : "Payment sent"}
         </div>
         <div style={{ fontSize: 14, color: "var(--text-secondary)", fontFamily: "var(--font-body)", textAlign: "center", lineHeight: 1.6, maxWidth: 280 }}>
           {wasCash
             ? cashConfirmed
               ? "The leader confirmed cash received. You're square."
               : "Give your share to the leader. They'll mark you as paid on their side."
-            : "Your leader will get a notification. Payment will confirm automatically."}
+            : "Your leader will see your payment in their dashboard."}
         </div>
 
         {wasCash && !cashConfirmed && (
@@ -78,20 +91,38 @@ export default function PaymentHandoffScreen() {
             <HandCoins size={16} /> Leader: mark as paid
           </button>
         )}
-        <HomeBottomBar />
+
+        <button
+          onClick={() => router.push("/screen/leader-dashboard")}
+          style={{
+            marginTop: 20,
+            padding: "12px 20px",
+            borderRadius: 12,
+            background: "transparent",
+            border: "1px solid var(--border-bright)",
+            color: "var(--text)",
+            fontWeight: 600,
+            fontSize: 13,
+            cursor: "pointer",
+            fontFamily: "var(--font-body)",
+          }}
+        >
+          See leader dashboard
+        </button>
+        <HomeBottomBar hidden />
       </div>
     );
   }
 
   return (
-    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "56px 20px 92px" }}>
-      <BackButton to="/screen/review-confirm" />
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "56px 20px 24px" }}>
+      <BackButton to="/screen/tip-phase" />
       <div style={{ marginBottom: 18 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 600, color: "var(--text)" }}>
           Pay the leader
         </div>
         <div style={{ fontSize: 13, color: "var(--text-secondary)", fontFamily: "var(--font-body)", marginTop: 4 }}>
-          Send $48.15 via any method the leader accepts.
+          Send ${amount.toFixed(2)} via any method the leader accepts.
         </div>
       </div>
 
@@ -108,7 +139,7 @@ export default function PaymentHandoffScreen() {
         Only methods the leader has connected are shown.
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1, overflowY: "auto" }}>
         {availableMethods.map((pm) => (
           <button
             key={pm.id}
@@ -153,6 +184,17 @@ export default function PaymentHandoffScreen() {
         ))}
       </div>
 
+      <div style={{
+        margin: "14px 0 10px",
+        fontSize: 11,
+        color: "var(--text-muted)",
+        fontFamily: "var(--font-body)",
+        textAlign: "center",
+        lineHeight: 1.5,
+      }}>
+        After you pay, the leader will see your payment in their dashboard.
+      </div>
+
       <button
         onClick={() => selected && setSent(true)}
         disabled={!selected}
@@ -160,7 +202,6 @@ export default function PaymentHandoffScreen() {
           width: "100%",
           padding: "16px",
           borderRadius: 14,
-          marginTop: 20,
           background: selected ? "var(--amber)" : "var(--bg-card)",
           color: selected ? "#000" : "var(--text-muted)",
           fontWeight: 700,
@@ -172,9 +213,13 @@ export default function PaymentHandoffScreen() {
           boxShadow: selected ? "0 8px 24px rgba(245,158,11,0.3)" : "none",
         }}
       >
-        {selected === "cash" ? "Confirm cash handoff" : "Pay $48.15"}
+        {selected === "cash"
+          ? "Confirm cash handoff"
+          : selected
+            ? `Send $${amount.toFixed(2)} via ${methodName(selected)}`
+            : `Pay $${amount.toFixed(2)}`}
       </button>
-      <HomeBottomBar />
+      <HomeBottomBar hidden />
     </div>
   );
 }
