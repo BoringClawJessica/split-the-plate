@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { friends, currentUser, receiptTotal } from "@/lib/mock-data";
 import { useState } from "react";
+import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 const PEOPLE = [
   { id: currentUser.id, name: "You" },
@@ -18,8 +19,9 @@ export default function CustomSplitScreen() {
   const balanced = Math.abs(remaining) < 0.01;
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "20px 20px 12px", flexShrink: 0 }}>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
+      <BackButton to="/screen/split-method" />
+      <div style={{ padding: "56px 20px 12px", flexShrink: 0 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--text)" }}>
           Custom Split
         </div>
@@ -109,9 +111,11 @@ export default function CustomSplitScreen() {
             fontFamily: "var(--font-body)",
           }}
         >
-          {balanced ? "Review Split →" : `Balance amounts first ($${Math.abs(remaining).toFixed(2)} left)`}
+          {balanced ? "Review Split" : `Balance amounts first ($${Math.abs(remaining).toFixed(2)} left)`}
         </button>
       </div>
+      <div style={{ height: 80, flexShrink: 0 }} />
+      <HomeBottomBar />
     </div>
   );
 }

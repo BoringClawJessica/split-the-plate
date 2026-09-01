@@ -17,17 +17,23 @@ const groupOrder = [
 ];
 
 const groupColors: Record<string, string> = {
-  Onboarding: "#F59E0B",
-  Home: "#EA580C",
-  "New Split": "#16a34a",
+  Onboarding: "#ab3500",
+  Home: "#ff6b35",
+  "New Split": "#15803d",
   "Gamble Pay": "#dc2626",
   "Meal Memory": "#0891b2",
   "Profile & Settings": "#7c3aed",
-  "Edge States": "#6b7280",
-  "Coming Soon": "#4b5563",
+  "Edge States": "#8c7b72",
+  "Coming Soon": "#594139",
 };
 
-export default function Sidebar({ currentSlug }: { currentSlug: string }) {
+export default function Sidebar({
+  currentSlug,
+  onNavigate,
+}: {
+  currentSlug: string;
+  onNavigate?: () => void;
+}) {
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
   const totalScreens = screens.length;
@@ -40,13 +46,12 @@ export default function Sidebar({ currentSlug }: { currentSlug: string }) {
   return (
     <div
       style={{
-        width: 220,
-        minWidth: 220,
+        width: "100%",
+        height: "100%",
         background: "var(--bg-surface)",
         borderRight: "1px solid var(--border)",
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
         overflow: "hidden",
       }}
     >
@@ -96,7 +101,7 @@ export default function Sidebar({ currentSlug }: { currentSlug: string }) {
             style={{
               height: "100%",
               width: `${((currentIdx + 1) / totalScreens) * 100}%`,
-              background: "linear-gradient(90deg, var(--amber), var(--orange))",
+              background: "linear-gradient(90deg, var(--brand-orange-from), var(--brand-orange-to))",
               borderRadius: 1,
               transition: "width 0.3s ease",
             }}
@@ -124,7 +129,7 @@ export default function Sidebar({ currentSlug }: { currentSlug: string }) {
                   alignItems: "center",
                   gap: 6,
                   padding: "6px 16px",
-                  background: hasActive ? "rgba(245,158,11,0.05)" : "transparent",
+                  background: hasActive ? "rgba(255,107,53,0.08)" : "transparent",
                   border: "none",
                   cursor: "pointer",
                   textAlign: "left",
@@ -167,13 +172,14 @@ export default function Sidebar({ currentSlug }: { currentSlug: string }) {
                     <Link
                       key={screen.slug}
                       href={`/screen/${screen.slug}`}
+                      onClick={() => onNavigate?.()}
                       style={{
                         display: "flex",
                         alignItems: "center",
                         padding: "5px 16px 5px 28px",
                         textDecoration: "none",
                         background: isActive
-                          ? "rgba(245,158,11,0.12)"
+                          ? "rgba(255,107,53,0.14)"
                           : "transparent",
                         borderLeft: isActive
                           ? `2px solid var(--amber)`

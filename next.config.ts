@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
+const isGhPages = process.env.DEPLOY_TARGET === "gh-pages";
+const repo = "split-the-plate";
+
 const nextConfig: NextConfig = {
-  output: 'export',
+  output: "export",
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -12,6 +15,8 @@ const nextConfig: NextConfig = {
     ],
   },
   trailingSlash: true,
+  basePath: isGhPages ? `/${repo}` : undefined,
+  assetPrefix: isGhPages ? `/${repo}/` : undefined,
 };
 
 export default nextConfig;

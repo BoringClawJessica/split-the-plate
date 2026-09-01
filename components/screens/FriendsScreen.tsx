@@ -2,8 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { friends } from "@/lib/mock-data";
-import { Search, UserPlus, ArrowLeft } from "lucide-react";
+import { Search, UserPlus } from "lucide-react";
 import { useState } from "react";
+import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 export default function FriendsScreen() {
   const router = useRouter();
@@ -14,12 +15,10 @@ export default function FriendsScreen() {
   );
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
+      <BackButton to="/screen/home" />
       {/* Header */}
-      <div style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-        <button onClick={() => router.back()} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-secondary)", padding: 0, display: "flex" }}>
-          <ArrowLeft size={20} />
-        </button>
+      <div style={{ padding: "56px 20px 12px", display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--text)" }}>Friends</div>
       </div>
 
@@ -73,6 +72,7 @@ export default function FriendsScreen() {
               border: "1px solid var(--border)",
               cursor: "pointer",
             }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={f.avatar} alt={f.name} style={{ width: 44, height: 44, borderRadius: "50%", border: "2px solid var(--border)" }} />
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", fontFamily: "var(--font-body)" }}>{f.name}</div>
@@ -93,7 +93,9 @@ export default function FriendsScreen() {
             </div>
           ))}
         </div>
+        <div style={{ height: 80 }} />
       </div>
+      <HomeBottomBar />
     </div>
   );
 }

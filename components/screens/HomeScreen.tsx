@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { currentUser, friends, pastMeals } from "@/lib/mock-data";
-import { Plus, Bell, Search } from "lucide-react";
+import { Plus, Bell, Dice5, User, Check } from "lucide-react";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -20,7 +20,7 @@ export default function HomeScreen() {
         <div>
           <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>Good evening,</div>
           <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--text)" }}>
-            {currentUser.name} 👋
+            {currentUser.name}
           </div>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
@@ -38,10 +38,9 @@ export default function HomeScreen() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 16,
             }}
           >
-            🙂
+            <User size={18} color="#000" strokeWidth={1.8} />
           </div>
         </div>
       </div>
@@ -141,7 +140,9 @@ export default function HomeScreen() {
             gap: 12,
           }}
         >
-          <div style={{ fontSize: 32 }}>🎲</div>
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: "rgba(220,38,38,0.25)", display: "flex", alignItems: "center", justifyContent: "center", color: "#f87171" }}>
+            <Dice5 size={22} strokeWidth={1.8} />
+          </div>
           <div>
             <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", fontFamily: "var(--font-body)" }}>
               Roll of the Day
@@ -172,7 +173,9 @@ export default function HomeScreen() {
                 gap: 12,
               }}
             >
-              <div style={{ fontSize: 28, flexShrink: 0 }}>{meal.emoji}</div>
+              <div style={{ width: 40, height: 40, borderRadius: 12, background: "var(--bg-raised)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--amber)", flexShrink: 0 }}>
+                <User size={20} strokeWidth={1.6} />
+              </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", fontFamily: "var(--font-body)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {meal.restaurant}
@@ -185,7 +188,7 @@ export default function HomeScreen() {
                 <div style={{ fontSize: 15, fontWeight: 600, color: "var(--amber)", fontFamily: "var(--font-body)" }}>
                   ${meal.your_share.toFixed(2)}
                 </div>
-                <div style={{ fontSize: 10, color: "var(--green)", fontFamily: "var(--font-body)" }}>✓ paid</div>
+                <div style={{ fontSize: 10, color: "var(--green)", fontFamily: "var(--font-body)", display: "inline-flex", alignItems: "center", gap: 3 }}><Check size={10} /> paid</div>
               </div>
             </div>
           ))}

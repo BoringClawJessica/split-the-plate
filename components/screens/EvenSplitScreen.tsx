@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { friends, currentUser, receiptTotal } from "@/lib/mock-data";
+import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 const PEOPLE = [
   { id: currentUser.id, name: "You", avatar: currentUser.avatar },
@@ -16,8 +17,9 @@ export default function EvenSplitScreen() {
   const router = useRouter();
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "20px 20px 12px", flexShrink: 0 }}>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
+      <BackButton to="/screen/split-method" />
+      <div style={{ padding: "56px 20px 12px", flexShrink: 0 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--text)" }}>
           Even Split
         </div>
@@ -54,6 +56,7 @@ export default function EvenSplitScreen() {
             padding: "12px 0",
             borderBottom: "1px solid var(--border)",
           }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={p.avatar} alt={p.name} style={{ width: 40, height: 40, borderRadius: "50%", border: "2px solid var(--border)" }} />
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)", fontFamily: "var(--font-body)" }}>{p.name}</div>
@@ -86,9 +89,11 @@ export default function EvenSplitScreen() {
             fontFamily: "var(--font-body)",
           }}
         >
-          Confirm Split →
+          Confirm Split
         </button>
       </div>
+      <div style={{ height: 80, flexShrink: 0 }} />
+      <HomeBottomBar />
     </div>
   );
 }

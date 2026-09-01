@@ -1,73 +1,90 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import {
+  Calendar,
+  GlassWater,
+  Smartphone,
+  ShoppingCart,
+  ChefHat,
+  BarChart3,
+  Star,
+  Gift,
+  Trophy,
+  Bot,
+  Rocket,
+  Lock,
+} from "lucide-react";
+import { BackButton, HomeBottomBar } from "../PhoneNav";
 
-const screenDetails: Record<string, { emoji: string; title: string; desc: string; phase: string; bullets: string[] }> = {
+type Detail = { icon: React.ReactNode; title: string; desc: string; phase: string; bullets: string[] };
+
+const screenDetails: Record<string, Detail> = {
   "reservations-preview": {
-    emoji: "📅",
+    icon: <Calendar size={48} strokeWidth={1.5} />,
     title: "Reservations",
     desc: "Book the perfect table — with 3D floor plans, real-time availability, and 5-minute holds.",
     phase: "Phase 1",
     bullets: ["3D restaurant walkthrough", "5-min table hold", "Party size & notes", "Waitlist join"],
   },
   "preorder-preview": {
-    emoji: "🥂",
+    icon: <GlassWater size={48} strokeWidth={1.5} />,
     title: "Pre-Order Menu",
     desc: "Your first course and drinks are on the table when you sit down. No waiting, no awkward flag-waving.",
     phase: "Phase 1",
     bullets: ["Pre-pay for first course", "Drinks waiting on arrival", "Advanced kitchen prep", "$5-10 convenience fee"],
   },
   "active-meal-preview": {
-    emoji: "📱",
+    icon: <Smartphone size={48} strokeWidth={1.5} />,
     title: "Active Meal / QR",
     desc: "Scan the QR at your table to join the meal, see the running order, and split in real-time.",
     phase: "Phase 1",
     bullets: ["TOTP-rotating QR", "Auto-join via location", "Running check live", "Call waiter silently"],
   },
   "order-cart-preview": {
-    emoji: "🛒",
+    icon: <ShoppingCart size={48} strokeWidth={1.5} />,
     title: "Order & Cart",
     desc: "Browse the full menu, add items to your cart, and the kitchen gets the ticket instantly.",
     phase: "Phase 2",
     bullets: ["Full menu with photos", "Dietary conflict warnings", "Add to running tab", "Shared table cart"],
   },
   "staff-mode-preview": {
-    emoji: "👨‍🍳",
+    icon: <ChefHat size={48} strokeWidth={1.5} />,
     title: "Staff Mode",
     desc: "One app, one screen per role — host, waiter, bartender, kitchen. Real-time, no radio.",
     phase: "Phase 2",
     bullets: ["Host: floor plan + queue", "Waiter: table orders", "Kitchen: live ticket display", "Force check, comps, voids"],
   },
   "owner-dashboard-preview": {
-    emoji: "📊",
+    icon: <BarChart3 size={48} strokeWidth={1.5} />,
     title: "Owner Dashboard",
     desc: "Live tonight's covers, weekly revenue, menu performance, and staff scheduling — all in one place.",
     phase: "Phase 3",
     bullets: ["Live table revenue", "Menu performance", "Staff scheduling", "Chain-level analytics"],
   },
   "loyalty-preview": {
-    emoji: "⭐",
+    icon: <Star size={48} strokeWidth={1.5} />,
     title: "Loyalty",
     desc: "Earn points on every meal, unlock rewards, and climb the restaurant leaderboard.",
     phase: "Phase 3",
-    bullets: ["Points on every meal", "Restaurant-specific rewards", "Plait Premium benefits", "VIP priority reservations"],
+    bullets: ["Points on every meal", "Restaurant-specific rewards", "Premium benefits", "VIP priority reservations"],
   },
   "gift-cards-preview": {
-    emoji: "🎁",
+    icon: <Gift size={48} strokeWidth={1.5} />,
     title: "Gift Cards",
-    desc: "Send digital gift cards for any restaurant on Plait. Perfect for birthdays, Galentine's, celebrations.",
+    desc: "Send digital gift cards for any restaurant on Split the Plate. Perfect for birthdays, celebrations, thank-yous.",
     phase: "Phase 3",
     bullets: ["Send to any user", "Any amount", "Restaurant-specific", "Shareable link"],
   },
   "leaderboards-preview": {
-    emoji: "🏆",
+    icon: <Trophy size={48} strokeWidth={1.5} />,
     title: "Leaderboards",
     desc: "Who's the top diner in your city? Compete on meals, spend, and gamble wins.",
     phase: "Phase 4",
     bullets: ["City-wide rankings", "Friend leaderboards", "Most adventurous eater", "Gamble champion"],
   },
   "ai-eats-preview": {
-    emoji: "🤖",
+    icon: <Bot size={48} strokeWidth={1.5} />,
     title: "AI 'What Should I Eat?'",
     desc: "Tell the AI what you're feeling — it asks a few questions and recommends restaurants + dishes.",
     phase: "Phase 4",
@@ -77,8 +94,8 @@ const screenDetails: Record<string, { emoji: string; title: string; desc: string
 
 export default function ComingSoonScreen({ slug }: { slug: string }) {
   const router = useRouter();
-  const details = screenDetails[slug] || {
-    emoji: "🚀",
+  const details: Detail = screenDetails[slug] || {
+    icon: <Rocket size={48} strokeWidth={1.5} />,
     title: "Coming Soon",
     desc: "This feature is part of a future phase of Split the Plate.",
     phase: "Future",
@@ -86,9 +103,10 @@ export default function ComingSoonScreen({ slug }: { slug: string }) {
   };
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "32px 24px" }}>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "56px 24px 92px" }}>
+      <BackButton to="/screen/home" />
       {/* Phase badge */}
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 20 }}>
         <div style={{
           display: "inline-flex",
           alignItems: "center",
@@ -105,16 +123,29 @@ export default function ComingSoonScreen({ slug }: { slug: string }) {
         </div>
       </div>
 
-      <div style={{ fontSize: 60, marginBottom: 16 }}>{details.emoji}</div>
+      <div style={{
+        width: 76,
+        height: 76,
+        borderRadius: 20,
+        background: "var(--bg-card)",
+        border: "1px solid var(--border)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "var(--amber)",
+        marginBottom: 16,
+      }}>
+        {details.icon}
+      </div>
       <div style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 600, color: "var(--text)", marginBottom: 12, lineHeight: 1.2 }}>
         {details.title}
       </div>
-      <div style={{ fontSize: 14, color: "var(--text-secondary)", fontFamily: "var(--font-body)", lineHeight: 1.7, marginBottom: 32 }}>
+      <div style={{ fontSize: 14, color: "var(--text-secondary)", fontFamily: "var(--font-body)", lineHeight: 1.7, marginBottom: 24 }}>
         {details.desc}
       </div>
 
       {details.bullets.length > 0 && (
-        <div style={{ marginBottom: 32 }}>
+        <div style={{ marginBottom: 24 }}>
           {details.bullets.map((b) => (
             <div key={b} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
               <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--amber)", flexShrink: 0 }} />
@@ -160,7 +191,9 @@ export default function ComingSoonScreen({ slug }: { slug: string }) {
           background: "rgba(8,6,3,0.85)",
           border: "1px solid rgba(245,158,11,0.3)",
         }}>
-          <div style={{ fontSize: 20, marginBottom: 6 }}>🔒</div>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 6, color: "var(--amber)" }}>
+            <Lock size={20} strokeWidth={1.8} />
+          </div>
           <div style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "var(--amber)", fontWeight: 600 }}>Preview locked</div>
           <div style={{ fontFamily: "var(--font-body)", fontSize: 11, color: "var(--text-muted)", marginTop: 3 }}>Coming in {details.phase}</div>
         </div>
@@ -176,8 +209,9 @@ export default function ComingSoonScreen({ slug }: { slug: string }) {
           fontFamily: "var(--font-body)",
         }}
       >
-        ← Back to Home
+        Back to Home
       </button>
+      <HomeBottomBar />
     </div>
   );
 }

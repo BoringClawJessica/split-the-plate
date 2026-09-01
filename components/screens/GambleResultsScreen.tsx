@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { friends, currentUser, paymentMethods } from "@/lib/mock-data";
+import { Trophy, Frown, Wallet, Smartphone, DollarSign, Banknote } from "lucide-react";
+import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 const PEOPLE = [
   { id: currentUser.id, name: "Eli", avatar: currentUser.avatar, pct: 15, you: true },
@@ -12,18 +14,31 @@ const PEOPLE = [
 
 const total = 187 * 1.08;
 
+const iconFor = (id: string) => {
+  switch (id) {
+    case "applepay": return <Smartphone size={16} color="#fff" />;
+    case "cashapp": return <DollarSign size={16} color="#fff" />;
+    case "venmo": return <Wallet size={16} color="#fff" />;
+    case "zelle": return <Wallet size={16} color="#fff" />;
+    case "paypal": return <Wallet size={16} color="#fff" />;
+    case "cash": return <Banknote size={16} color="#fff" />;
+    default: return <Wallet size={16} color="#fff" />;
+  }
+};
+
 export default function GambleResultsScreen() {
   const router = useRouter();
   const sorted = [...PEOPLE].sort((a, b) => a.pct - b.pct);
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "20px 20px 12px", flexShrink: 0 }}>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
+      <BackButton to="/screen/gamble-picker" />
+      <div style={{ padding: "56px 20px 12px", flexShrink: 0 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--text)" }}>
-          Results 🎲
+          Results
         </div>
         <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 4 }}>
-          Plinko final — total ${total.toFixed(2)}
+          Plinko final &mdash; total ${total.toFixed(2)}
         </div>
       </div>
 
@@ -39,10 +54,21 @@ export default function GambleResultsScreen() {
         gap: 12,
         flexShrink: 0,
       }}>
-        <div style={{ fontSize: 40 }}>🏆</div>
+        <div style={{
+          width: 44,
+          height: 44,
+          borderRadius: 14,
+          background: "rgba(245,158,11,0.2)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "var(--amber)",
+        }}>
+          <Trophy size={22} strokeWidth={1.8} />
+        </div>
         <div>
           <div style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: "var(--amber)" }}>
-            You got lucky, Eli!
+            You got lucky, Eli.
           </div>
           <div style={{ fontSize: 13, color: "var(--text-secondary)", fontFamily: "var(--font-body)" }}>
             Lowest share at 15% · ${(total * 0.15).toFixed(2)}
@@ -71,11 +97,13 @@ export default function GambleResultsScreen() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 14,
+              fontSize: 12,
+              color: idx === 0 ? "#000" : "var(--text)",
               flexShrink: 0,
             }}>
-              {idx === 0 ? "🏆" : idx === sorted.length - 1 ? "😬" : `${idx + 1}`}
+              {idx === 0 ? <Trophy size={13} /> : idx === sorted.length - 1 ? <Frown size={13} color="#f87171" /> : `${idx + 1}`}
             </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={p.avatar} alt={p.name} style={{ width: 36, height: 36, borderRadius: "50%", border: "2px solid var(--border)" }} />
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 14, fontWeight: 600, color: p.you ? "var(--amber)" : "var(--text)", fontFamily: "var(--font-body)" }}>
@@ -96,13 +124,13 @@ export default function GambleResultsScreen() {
           <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>
             Collect via
           </div>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             {paymentMethods.map((pm) => (
               <button
                 key={pm.id}
                 style={{
-                  flex: 1,
-                  padding: "10px 0",
+                  flex: "1 1 30%",
+                  padding: "10px 6px",
                   borderRadius: 10,
                   background: "var(--bg-card)",
                   border: "1px solid var(--border)",
@@ -113,15 +141,23 @@ export default function GambleResultsScreen() {
                   gap: 4,
                 }}
               >
-                <span style={{ fontSize: 18 }}>{pm.emoji}</span>
-                <span style={{ fontSize: 9, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>{pm.name}</span>
+                <span style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 8,
+                  background: pm.color,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>{iconFor(pm.id)}</span>
+                <span style={{ fontSize: 10, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>{pm.name}</span>
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      <div style={{ padding: "16px 20px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", flexShrink: 0 }}>
+      <div style={{ padding: "16px 20px 92px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", flexShrink: 0 }}>
         <button
           onClick={() => router.push("/screen/save-meal")}
           style={{
@@ -131,9 +167,10 @@ export default function GambleResultsScreen() {
             fontFamily: "var(--font-body)",
           }}
         >
-          Send Requests & Save Meal →
+          Send Requests &amp; Save Meal
         </button>
       </div>
+      <HomeBottomBar />
     </div>
   );
 }

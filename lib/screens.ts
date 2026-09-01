@@ -9,9 +9,8 @@ export const screens: Screen[] = [
   // ONBOARDING
   { slug: "splash", title: "Splash", group: "Onboarding" },
   { slug: "signin", title: "Sign In", group: "Onboarding" },
-  { slug: "profile-setup", title: "Name & Photo", group: "Onboarding" },
+  { slug: "profile-setup", title: "Username & Photo", group: "Onboarding" },
   { slug: "notifications-permission", title: "Notifications", group: "Onboarding" },
-  { slug: "onboarding-done", title: "All Set!", group: "Onboarding" },
 
   // HOME
   { slug: "home", title: "Home", group: "Home" },
@@ -33,9 +32,7 @@ export const screens: Screen[] = [
   // GAMBLE PAY
   { slug: "gamble-picker", title: "Gamble Mode", group: "Gamble Pay" },
   { slug: "plinko", title: "Plinko", group: "Gamble Pay" },
-  { slug: "roulette", title: "Roulette", group: "Gamble Pay" },
-  { slug: "coin-flip", title: "Coin Flip", group: "Gamble Pay" },
-  { slug: "half-off", title: "Half-Off Roulette", group: "Gamble Pay" },
+  { slug: "roulette", title: "Spin the Wheel", group: "Gamble Pay" },
   { slug: "gamble-results", title: "Results", group: "Gamble Pay" },
 
   // MEAL MEMORY

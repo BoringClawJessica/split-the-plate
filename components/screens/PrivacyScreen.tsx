@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
   return (
@@ -42,7 +43,8 @@ export default function PrivacyScreen() {
   });
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "20px 20px" }}>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "56px 20px 92px" }}>
+      <BackButton to="/screen/settings" />
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--text)" }}>Privacy</div>
         <div style={{ fontSize: 13, color: "var(--text-secondary)", fontFamily: "var(--font-body)", marginTop: 4 }}>Control who sees your activity</div>
@@ -103,6 +105,7 @@ export default function PrivacyScreen() {
           </div>
         ))}
       </div>
+      <HomeBottomBar />
     </div>
   );
 }

@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Camera } from "lucide-react";
+import { Camera, Star, Check } from "lucide-react";
+import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 export default function SaveMealScreen() {
   const router = useRouter();
@@ -11,10 +12,11 @@ export default function SaveMealScreen() {
   const [rating, setRating] = useState(4);
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "20px 20px 12px", flexShrink: 0 }}>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
+      <BackButton to="/screen/gamble-results" />
+      <div style={{ padding: "56px 20px 12px", flexShrink: 0 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--text)" }}>
-          Save This Meal 📸
+          Save this meal
         </div>
         <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 4 }}>
           Keep a memory of tonight
@@ -60,15 +62,19 @@ export default function SaveMealScreen() {
         <div style={{ marginBottom: 16 }}>
           <label style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em" }}>Your Rating</label>
           <div style={{ display: "flex", gap: 8 }}>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                onClick={() => setRating(star)}
-                style={{ fontSize: 28, background: "none", border: "none", cursor: "pointer", opacity: star <= rating ? 1 : 0.3, transition: "opacity 0.1s" }}
-              >
-                ⭐
-              </button>
-            ))}
+            {[1, 2, 3, 4, 5].map((star) => {
+              const active = star <= rating;
+              return (
+                <button
+                  key={star}
+                  onClick={() => setRating(star)}
+                  aria-label={`${star} star${star === 1 ? "" : "s"}`}
+                  style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: active ? "var(--amber)" : "var(--text-muted)", transition: "color 0.1s" }}
+                >
+                  <Star size={28} strokeWidth={1.6} fill={active ? "var(--amber)" : "none"} />
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -93,7 +99,7 @@ export default function SaveMealScreen() {
         <div>
           <label style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", display: "block", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em" }}>Party (4 people)</label>
           <div style={{ display: "flex", gap: 8 }}>
-            {["🙂 Eli", "😊 Sofia", "😄 Marcus", "🙃 Jade"].map((p) => (
+            {["Eli", "Sofia", "Marcus", "Jade"].map((p) => (
               <div key={p} style={{ padding: "6px 10px", borderRadius: 8, background: "var(--bg-card)", border: "1px solid var(--border)", fontSize: 11, color: "var(--text-secondary)", fontFamily: "var(--font-body)" }}>
                 {p}
               </div>
@@ -110,11 +116,17 @@ export default function SaveMealScreen() {
             background: "var(--amber)", color: "#000",
             fontWeight: 700, fontSize: 15, border: "none", cursor: "pointer",
             fontFamily: "var(--font-body)",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
           }}
         >
-          Save Meal ✓
+          <Check size={16} /> Save Meal
         </button>
       </div>
+      <div style={{ height: 80, flexShrink: 0 }} />
+      <HomeBottomBar />
     </div>
   );
 }

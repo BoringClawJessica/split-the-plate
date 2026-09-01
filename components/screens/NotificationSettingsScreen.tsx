@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
   return (
@@ -35,7 +36,8 @@ export default function NotificationSettingsScreen() {
   );
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "20px 20px" }}>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "56px 20px 92px" }}>
+      <BackButton to="/screen/settings" />
       <div style={{ marginBottom: 20 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--text)" }}>Notifications</div>
         <div style={{ fontSize: 13, color: "var(--text-secondary)", fontFamily: "var(--font-body)", marginTop: 4 }}>
@@ -64,6 +66,7 @@ export default function NotificationSettingsScreen() {
           ))}
         </div>
       </div>
+      <HomeBottomBar />
     </div>
   );
 }

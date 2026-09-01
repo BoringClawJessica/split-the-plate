@@ -47,7 +47,7 @@ export const pastMeals = [
     total: 127.5,
     your_share: 31.88,
     party: ["eli", "f1", "f2", "f3"],
-    emoji: "🌮",
+    emoji: "",
     status: "paid",
     split_method: "even",
     items: ["Street Tacos x3", "Guac & Chips", "Margarita", "Enchiladas"],
@@ -60,7 +60,7 @@ export const pastMeals = [
     total: 210.0,
     your_share: 52.5,
     party: ["eli", "f4", "f1"],
-    emoji: "🍣",
+    emoji: "",
     status: "paid",
     split_method: "by_item",
     items: ["Omakase Set", "Sake", "Edamame", "Dragon Roll", "Toro Nigiri x4"],
@@ -73,7 +73,7 @@ export const pastMeals = [
     total: 89.0,
     your_share: 22.25,
     party: ["eli", "f2", "f3"],
-    emoji: "🥞",
+    emoji: "",
     status: "paid",
     split_method: "gamble",
     winner: "Sofia",
@@ -95,34 +95,24 @@ export const receiptItems = [
 
 export const receiptTotal = receiptItems.reduce((s, i) => s + i.price, 0); // 187
 
-export const gambleModes = [
+export const gambleModes: {
+  id: string;
+  name: string;
+  description: string;
+  risk: string;
+  emoji?: string;
+}[] = [
   {
     id: "plinko",
     name: "Plinko",
-    emoji: "🎯",
     description: "Drop balls — where they land = what you owe",
     risk: "Medium",
   },
   {
     id: "roulette",
-    name: "Roulette",
-    emoji: "🎡",
+    name: "Spin the Wheel",
     description: "Spin the wheel — your slice = your share",
     risk: "Medium",
-  },
-  {
-    id: "coinflip",
-    name: "Coin Flip",
-    emoji: "🪙",
-    description: "Heads wins — loser pays double",
-    risk: "High",
-  },
-  {
-    id: "halfoff",
-    name: "Half-Off Roulette",
-    emoji: "💸",
-    description: "One random person gets 50% off",
-    risk: "Low",
   },
 ];
 
@@ -130,40 +120,43 @@ export const splitMethods = [
   {
     id: "even",
     name: "Split Even",
-    emoji: "⚖️",
     description: "Divide the total equally among everyone",
   },
   {
     id: "by_item",
     name: "By Item",
-    emoji: "🍽️",
     description: "Assign each item to the person who ordered it",
   },
   {
     id: "custom",
     name: "Custom",
-    emoji: "✏️",
     description: "Enter a custom amount for each person",
   },
   {
     id: "gamble",
     name: "Gamble Pay",
-    emoji: "🎲",
     description: "Play a game to decide who owes what",
   },
 ];
 
-export const paymentMethods = [
-  { id: "venmo", name: "Venmo", color: "#008CFF", emoji: "💙" },
-  { id: "cashapp", name: "Cash App", color: "#00C244", emoji: "💚" },
-  { id: "applepay", name: "Apple Pay", color: "#000000", emoji: "🍎" },
-  { id: "zelle", name: "Zelle", color: "#6B21A8", emoji: "💜" },
+export const paymentMethods: {
+  id: string;
+  name: string;
+  color: string;
+  emoji?: string;
+}[] = [
+  { id: "applepay", name: "Apple Pay", color: "#000000" },
+  { id: "cashapp", name: "Cash App", color: "#00C244" },
+  { id: "venmo", name: "Venmo", color: "#008CFF" },
+  { id: "zelle", name: "Zelle", color: "#6B21A8" },
+  { id: "paypal", name: "PayPal", color: "#003087" },
+  { id: "cash", name: "Cash", color: "#4b5563" },
 ];
 
 export const tableMessages = [
-  { id: "msg1", sender: "Sofia", text: "omg that wagyu 😭", time: "8:47 PM", type: "message" },
+  { id: "msg1", sender: "Sofia", text: "omg that wagyu was unreal", time: "8:47 PM", type: "message" },
   { id: "msg2", sender: "Marcus", text: "someone order the truffle fries again pls", time: "8:49 PM", type: "message" },
   { id: "msg3", sender: "system", text: "Eli started the check", time: "9:12 PM", type: "system" },
   { id: "msg4", sender: "Jade", text: "finally lol", time: "9:12 PM", type: "message" },
-  { id: "msg5", sender: "system", text: "✅ All payments received — Meal ended", time: "9:28 PM", type: "system" },
+  { id: "msg5", sender: "system", text: "All payments received — Meal ended", time: "9:28 PM", type: "system" },
 ];

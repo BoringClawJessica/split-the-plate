@@ -1,13 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Camera, PenLine, Plus } from "lucide-react";
+import { Camera, PenLine } from "lucide-react";
+import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 export default function NewSplitScreen() {
   const router = useRouter();
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "28px 20px" }}>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "56px 20px 92px" }}>
+      <BackButton to="/screen/home" />
       <div style={{ marginBottom: 28 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 600, color: "var(--text)" }}>
           New Split
@@ -19,7 +21,7 @@ export default function NewSplitScreen() {
 
       <div style={{ display: "flex", flexDirection: "column", gap: 14, flex: 1 }}>
         <SplitOption
-          emoji="📷"
+          icon={<Camera size={26} strokeWidth={1.8} color="#000" />}
           title="Scan Receipt"
           desc="Point camera at your bill — we detect items automatically"
           accent="var(--amber)"
@@ -27,18 +29,11 @@ export default function NewSplitScreen() {
           primary
         />
         <SplitOption
-          emoji="✏️"
+          icon={<PenLine size={24} strokeWidth={1.8} color="var(--text)" />}
           title="Manual Entry"
           desc="Type in items and prices yourself"
           accent="var(--orange)"
           onClick={() => router.push("/screen/items-detected")}
-        />
-        <SplitOption
-          emoji="➕"
-          title="Add to Existing Split"
-          desc="Attach more items to a split already in progress"
-          accent="#0891b2"
-          onClick={() => router.push("/screen/review-confirm")}
         />
       </div>
 
@@ -48,7 +43,7 @@ export default function NewSplitScreen() {
           Recent restaurants
         </div>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {["Fuego & Sol 🌮", "Sushi Roku 🍣", "Brunch Bar 🥞"].map((r) => (
+          {["Fuego & Sol", "Sushi Roku", "Brunch Bar"].map((r) => (
             <button
               key={r}
               onClick={() => router.push("/screen/camera-scan")}
@@ -68,12 +63,13 @@ export default function NewSplitScreen() {
           ))}
         </div>
       </div>
+      <HomeBottomBar />
     </div>
   );
 }
 
-function SplitOption({ emoji, title, desc, accent, onClick, primary }: {
-  emoji: string;
+function SplitOption({ icon, title, desc, accent, onClick, primary }: {
+  icon: React.ReactNode;
   title: string;
   desc: string;
   accent: string;
@@ -104,10 +100,9 @@ function SplitOption({ emoji, title, desc, accent, onClick, primary }: {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontSize: 24,
         flexShrink: 0,
       }}>
-        {emoji}
+        {icon}
       </div>
       <div>
         <div style={{ fontFamily: "var(--font-body)", fontSize: 15, fontWeight: 600, color: primary ? accent : "var(--text)", marginBottom: 3 }}>

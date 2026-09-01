@@ -4,7 +4,6 @@ import SplashScreen from "./screens/SplashScreen";
 import SignInScreen from "./screens/SignInScreen";
 import ProfileSetupScreen from "./screens/ProfileSetupScreen";
 import NotificationsScreen from "./screens/NotificationsScreen";
-import OnboardingDoneScreen from "./screens/OnboardingDoneScreen";
 import HomeScreen from "./screens/HomeScreen";
 import FriendsScreen from "./screens/FriendsScreen";
 import HomeEmptyScreen from "./screens/HomeEmptyScreen";
@@ -21,8 +20,6 @@ import PaymentHandoffScreen from "./screens/PaymentHandoffScreen";
 import GamblePickerScreen from "./screens/GamblePickerScreen";
 import PlinkoScreen from "./screens/PlinkoScreen";
 import RouletteScreen from "./screens/RouletteScreen";
-import CoinFlipScreen from "./screens/CoinFlipScreen";
-import HalfOffScreen from "./screens/HalfOffScreen";
 import GambleResultsScreen from "./screens/GambleResultsScreen";
 import SaveMealScreen from "./screens/SaveMealScreen";
 import MealDetailScreen from "./screens/MealDetailScreen";
@@ -48,7 +45,6 @@ export default function ScreenContent({ slug }: { slug: string }) {
     case "signin": return <SignInScreen />;
     case "profile-setup": return <ProfileSetupScreen />;
     case "notifications-permission": return <NotificationsScreen />;
-    case "onboarding-done": return <OnboardingDoneScreen />;
     case "home": return <HomeScreen />;
     case "friends": return <FriendsScreen />;
     case "home-empty": return <HomeEmptyScreen />;
@@ -65,8 +61,6 @@ export default function ScreenContent({ slug }: { slug: string }) {
     case "gamble-picker": return <GamblePickerScreen />;
     case "plinko": return <PlinkoScreen />;
     case "roulette": return <RouletteScreen />;
-    case "coin-flip": return <CoinFlipScreen />;
-    case "half-off": return <HalfOffScreen />;
     case "gamble-results": return <GambleResultsScreen />;
     case "save-meal": return <SaveMealScreen />;
     case "meal-detail": return <MealDetailScreen />;
@@ -96,7 +90,7 @@ export default function ScreenContent({ slug }: { slug: string }) {
           background: "var(--bg-base)",
           textAlign: "center",
         }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>🚧</div>
+          <div style={{ fontSize: 48, marginBottom: 16, color: "var(--brand-orange-from)" }}>—</div>
           <div style={{ fontFamily: "var(--font-display)", fontSize: 20, color: "var(--text)" }}>Coming Soon</div>
           <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 8 }}>{slug}</div>
         </div>

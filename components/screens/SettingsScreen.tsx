@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ChevronRight, CreditCard, Bell, Lock, LogOut, User } from "lucide-react";
+import { ChevronRight, CreditCard, Bell, Lock, LogOut, User, Star, MessageSquare, FileText } from "lucide-react";
+import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -24,16 +25,17 @@ export default function SettingsScreen() {
     {
       title: "More",
       items: [
-        { icon: "⭐", label: "Rate Split the Plate" },
-        { icon: "💬", label: "Send Feedback" },
-        { icon: "📋", label: "Terms & Privacy" },
+        { icon: <Star size={16} />, label: "Rate Split the Plate" },
+        { icon: <MessageSquare size={16} />, label: "Send Feedback" },
+        { icon: <FileText size={16} />, label: "Terms & Privacy" },
       ],
     },
   ];
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
-      <div style={{ padding: "20px 20px 12px", flexShrink: 0 }}>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
+      <BackButton to="/screen/profile" />
+      <div style={{ padding: "56px 20px 12px", flexShrink: 0 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 600, color: "var(--text)" }}>Settings</div>
       </div>
 
@@ -60,9 +62,9 @@ export default function SettingsScreen() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: 22,
+          color: "#000",
         }}>
-          🙂
+          <User size={22} strokeWidth={1.6} />
         </div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 15, fontWeight: 600, color: "var(--text)", fontFamily: "var(--font-body)" }}>Eli</div>
@@ -121,7 +123,9 @@ export default function SettingsScreen() {
           <LogOut size={16} />
           Sign Out
         </button>
+        <div style={{ height: 80 }} />
       </div>
+      <HomeBottomBar />
     </div>
   );
 }

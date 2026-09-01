@@ -2,12 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { gambleModes } from "@/lib/mock-data";
+import { Circle, Target, AlertTriangle } from "lucide-react";
+import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 const routeMap: Record<string, string> = {
   plinko: "/screen/plinko",
   roulette: "/screen/roulette",
-  coinflip: "/screen/coin-flip",
-  halfoff: "/screen/half-off",
 };
 
 const riskColors: Record<string, string> = {
@@ -16,14 +16,20 @@ const riskColors: Record<string, string> = {
   High: "#dc2626",
 };
 
+const iconFor = (id: string) => {
+  if (id === "plinko") return <Target size={26} strokeWidth={1.6} color="#f87171" />;
+  return <Circle size={26} strokeWidth={1.6} color="#f87171" />;
+};
+
 export default function GamblePickerScreen() {
   const router = useRouter();
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "28px 20px" }}>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "56px 20px 92px" }}>
+      <BackButton to="/screen/split-method" />
       <div style={{ marginBottom: 8 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 600, color: "var(--text)" }}>
-          Gamble Pay 🎲
+          Gamble Pay
         </div>
         <div style={{ fontSize: 13, color: "var(--text-secondary)", fontFamily: "var(--font-body)", marginTop: 4 }}>
           Pick a game. Your fate is in the numbers.
@@ -41,8 +47,12 @@ export default function GamblePickerScreen() {
         color: "#f87171",
         fontFamily: "var(--font-body)",
         lineHeight: 1.5,
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 8,
       }}>
-        ⚠️ Once a game starts, the result is final. Everyone must agree before playing.
+        <AlertTriangle size={14} style={{ marginTop: 2, flexShrink: 0 }} />
+        <span>Once a game starts, the result is final. Everyone must agree before playing.</span>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
@@ -70,11 +80,10 @@ export default function GamblePickerScreen() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 28,
               flexShrink: 0,
               border: "1px solid rgba(220,38,38,0.2)",
             }}>
-              {mode.emoji}
+              {iconFor(mode.id)}
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ fontFamily: "var(--font-body)", fontSize: 16, fontWeight: 600, color: "var(--text)", marginBottom: 4 }}>
@@ -92,6 +101,7 @@ export default function GamblePickerScreen() {
           </button>
         ))}
       </div>
+      <HomeBottomBar />
     </div>
   );
 }

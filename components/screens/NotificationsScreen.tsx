@@ -1,15 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Bell, BellOff } from "lucide-react";
+import { Bell } from "lucide-react";
+import { BackButton } from "../PhoneNav";
 
 export default function NotificationsScreen() {
   const router = useRouter();
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "32px 28px" }}>
-      <div style={{ marginBottom: 40 }}>
-        <div style={{ fontSize: 11, color: "var(--amber)", letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "var(--font-body)", marginBottom: 8 }}>Step 2 of 3</div>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "56px 28px 32px" }}>
+      <BackButton to="/screen/profile-setup" />
+      <div style={{ marginBottom: 32 }}>
+        <div style={{ fontSize: 11, color: "var(--amber)", letterSpacing: "0.1em", textTransform: "uppercase", fontFamily: "var(--font-body)", marginBottom: 8 }}>Step 2 of 2</div>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 600, color: "var(--text)", lineHeight: 1.2 }}>
           Stay in the loop
         </div>
@@ -57,7 +59,7 @@ export default function NotificationsScreen() {
 
       <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 24 }}>
         <button
-          onClick={() => router.push("/screen/onboarding-done")}
+          onClick={() => router.push("/screen/home")}
           style={{
             width: "100%", padding: "16px", borderRadius: 14,
             background: "var(--amber)", color: "#000",
@@ -68,7 +70,7 @@ export default function NotificationsScreen() {
           Allow Notifications
         </button>
         <button
-          onClick={() => router.push("/screen/onboarding-done")}
+          onClick={() => router.push("/screen/home")}
           style={{
             width: "100%", padding: "14px", borderRadius: 14,
             background: "transparent", color: "var(--text-muted)",

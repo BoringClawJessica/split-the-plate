@@ -1,20 +1,56 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { splitMethods } from "@/lib/mock-data";
+import { Scale, Utensils, Pencil, Dice5 } from "lucide-react";
+import { BackButton, HomeBottomBar } from "../PhoneNav";
 
-const routeMap: Record<string, string> = {
-  even: "/screen/even-split",
-  by_item: "/screen/by-item",
-  custom: "/screen/custom-split",
-  gamble: "/screen/gamble-picker",
+type Method = {
+  id: string;
+  name: string;
+  description: string;
+  route: string;
+  icon: React.ReactNode;
+  wild?: boolean;
 };
+
+const methods: Method[] = [
+  {
+    id: "even",
+    name: "Split Even",
+    description: "Divide the total equally among everyone",
+    route: "/screen/even-split",
+    icon: <Scale size={24} strokeWidth={1.6} />,
+  },
+  {
+    id: "by_item",
+    name: "By Item",
+    description: "Assign each item to the person who ordered it",
+    route: "/screen/by-item",
+    icon: <Utensils size={24} strokeWidth={1.6} />,
+  },
+  {
+    id: "custom",
+    name: "Custom",
+    description: "Enter a custom amount for each person",
+    route: "/screen/custom-split",
+    icon: <Pencil size={24} strokeWidth={1.6} />,
+  },
+  {
+    id: "gamble",
+    name: "Gamble Pay",
+    description: "Play a game to decide who owes what",
+    route: "/screen/gamble-picker",
+    icon: <Dice5 size={24} strokeWidth={1.6} />,
+    wild: true,
+  },
+];
 
 export default function SplitMethodScreen() {
   const router = useRouter();
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "28px 20px" }}>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", padding: "56px 20px 92px" }}>
+      <BackButton to="/screen/add-people" />
       <div style={{ marginBottom: 24 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 600, color: "var(--text)" }}>
           How to split?
@@ -25,10 +61,10 @@ export default function SplitMethodScreen() {
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
-        {splitMethods.map((method) => (
+        {methods.map((method) => (
           <button
             key={method.id}
-            onClick={() => router.push(routeMap[method.id] || "/screen/review-confirm")}
+            onClick={() => router.push(method.route)}
             style={{
               padding: "18px",
               borderRadius: 18,
@@ -41,39 +77,31 @@ export default function SplitMethodScreen() {
               gap: 16,
               transition: "all 0.15s",
             }}
-            onMouseOver={(e) => {
-              (e.currentTarget as HTMLElement).style.borderColor = "var(--amber-dim)";
-              (e.currentTarget as HTMLElement).style.background = "var(--bg-raised)";
-            }}
-            onMouseOut={(e) => {
-              (e.currentTarget as HTMLElement).style.borderColor = "var(--border)";
-              (e.currentTarget as HTMLElement).style.background = "var(--bg-card)";
-            }}
           >
             <div style={{
               width: 52,
               height: 52,
               borderRadius: 14,
-              background: method.id === "gamble" ? "linear-gradient(135deg, rgba(220,38,38,0.3), rgba(234,88,12,0.3))" : "var(--bg-raised)",
+              background: method.wild ? "linear-gradient(135deg, rgba(220,38,38,0.3), rgba(234,88,12,0.3))" : "var(--bg-raised)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: 24,
+              color: method.wild ? "#f87171" : "var(--amber)",
               flexShrink: 0,
-              border: method.id === "gamble" ? "1px solid rgba(220,38,38,0.3)" : "1px solid var(--border)",
+              border: method.wild ? "1px solid rgba(220,38,38,0.3)" : "1px solid var(--border)",
             }}>
-              {method.emoji}
+              {method.icon}
             </div>
             <div style={{ flex: 1 }}>
               <div style={{
                 fontFamily: "var(--font-body)",
                 fontSize: 15,
                 fontWeight: 600,
-                color: method.id === "gamble" ? "#ea580c" : "var(--text)",
+                color: method.wild ? "#ea580c" : "var(--text)",
                 marginBottom: 4,
               }}>
                 {method.name}
-                {method.id === "gamble" && (
+                {method.wild && (
                   <span style={{
                     marginLeft: 8,
                     fontSize: 10,
@@ -96,6 +124,7 @@ export default function SplitMethodScreen() {
           </button>
         ))}
       </div>
+      <HomeBottomBar />
     </div>
   );
 }

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { CheckCircle2 } from "lucide-react";
+import { HomeBottomBar } from "../PhoneNav";
 
 export default function CameraScanScreen() {
   const router = useRouter();
@@ -133,7 +135,7 @@ export default function CameraScanScreen() {
             animation: "bounce-in 0.4s ease",
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-              <div style={{ fontSize: 24 }}>✅</div>
+              <CheckCircle2 size={26} color="var(--amber)" strokeWidth={2} />
               <div>
                 <div style={{ fontFamily: "var(--font-body)", fontSize: 15, fontWeight: 600, color: "var(--amber)" }}>Detected 8 items</div>
                 <div style={{ fontFamily: "var(--font-body)", fontSize: 12, color: "var(--text-muted)" }}>$187.00 subtotal · tap to review</div>
@@ -148,11 +150,12 @@ export default function CameraScanScreen() {
                 fontFamily: "var(--font-body)",
               }}
             >
-              Review Items →
+              Review Items
             </button>
           </div>
         )}
       </div>
+      <HomeBottomBar />
     </div>
   );
 }

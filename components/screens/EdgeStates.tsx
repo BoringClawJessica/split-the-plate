@@ -1,19 +1,32 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Camera, Users, Utensils, AlertCircle, WifiOff } from "lucide-react";
+import { BackButton, HomeBottomBar } from "../PhoneNav";
 
-function EdgeLayout({ emoji, title, desc, primary, secondary, offline }: {
-  emoji: string;
+function EdgeLayout({
+  icon,
+  title,
+  desc,
+  primary,
+  secondary,
+  offline,
+  backTo,
+}: {
+  icon: React.ReactNode;
   title: string;
   desc: string;
   primary?: { label: string; route: string };
   secondary?: { label: string; route: string };
   offline?: boolean;
+  backTo?: string;
 }) {
   const router = useRouter();
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "32px 28px", position: "relative" }}>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "56px 28px 92px" }}>
+      <BackButton to={backTo ?? "/screen/home"} />
+
       {offline && (
         <div style={{
           position: "absolute",
@@ -32,11 +45,24 @@ function EdgeLayout({ emoji, title, desc, primary, secondary, offline }: {
         </div>
       )}
 
-      <div style={{ fontSize: 72, marginBottom: 24 }}>{emoji}</div>
-      <div style={{ fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 600, color: "var(--text)", textAlign: "center", marginBottom: 12 }}>
+      <div style={{
+        width: 88,
+        height: 88,
+        borderRadius: 24,
+        background: "var(--bg-card)",
+        border: "1px solid var(--border)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        color: "var(--amber)",
+        marginBottom: 20,
+      }}>
+        {icon}
+      </div>
+      <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 600, color: "var(--text)", textAlign: "center", marginBottom: 10 }}>
         {title}
       </div>
-      <div style={{ fontSize: 14, color: "var(--text-secondary)", textAlign: "center", fontFamily: "var(--font-body)", lineHeight: 1.6, marginBottom: 40, maxWidth: 280 }}>
+      <div style={{ fontSize: 14, color: "var(--text-secondary)", textAlign: "center", fontFamily: "var(--font-body)", lineHeight: 1.6, marginBottom: 32, maxWidth: 280 }}>
         {desc}
       </div>
       {primary && (
@@ -65,6 +91,7 @@ function EdgeLayout({ emoji, title, desc, primary, secondary, offline }: {
           {secondary.label}
         </button>
       )}
+      <HomeBottomBar />
     </div>
   );
 }
@@ -72,11 +99,12 @@ function EdgeLayout({ emoji, title, desc, primary, secondary, offline }: {
 export function ReceiptNotFoundScreen() {
   return (
     <EdgeLayout
-      emoji="📷"
+      icon={<Camera size={40} strokeWidth={1.5} />}
       title="Receipt not detected"
       desc="We couldn't read that one. Try moving closer, better lighting, or just type it in."
       primary={{ label: "Try Again", route: "/screen/camera-scan" }}
       secondary={{ label: "Enter Manually Instead", route: "/screen/items-detected" }}
+      backTo="/screen/camera-scan"
     />
   );
 }
@@ -84,10 +112,10 @@ export function ReceiptNotFoundScreen() {
 export function NoFriendsScreen() {
   return (
     <EdgeLayout
-      emoji="👥"
+      icon={<Users size={40} strokeWidth={1.5} />}
       title="No friends yet"
       desc="Invite friends to start splitting bills together. They'll get $5 off their first split."
-      primary={{ label: "Invite Friends →", route: "/screen/friends" }}
+      primary={{ label: "Invite Friends", route: "/screen/friends" }}
       secondary={{ label: "Continue Anyway", route: "/screen/new-split" }}
     />
   );
@@ -96,10 +124,10 @@ export function NoFriendsScreen() {
 export function NoSplitsScreen() {
   return (
     <EdgeLayout
-      emoji="🍽️"
+      icon={<Utensils size={40} strokeWidth={1.5} />}
       title="No splits yet"
       desc="Go out, scan your receipt, and Split the Plate handles the rest. First one's on us (well, on everyone equally)."
-      primary={{ label: "Start Your First Split →", route: "/screen/new-split" }}
+      primary={{ label: "Start Your First Split", route: "/screen/new-split" }}
     />
   );
 }
@@ -107,11 +135,12 @@ export function NoSplitsScreen() {
 export function PaymentFailedScreen() {
   return (
     <EdgeLayout
-      emoji="❌"
+      icon={<AlertCircle size={40} strokeWidth={1.5} />}
       title="Payment failed"
       desc="Something went wrong sending that request. Check your payment handle or try a different app."
       primary={{ label: "Try Again", route: "/screen/payment-handoff" }}
       secondary={{ label: "Send Cash Instead", route: "/screen/home" }}
+      backTo="/screen/payment-handoff"
     />
   );
 }
@@ -119,7 +148,7 @@ export function PaymentFailedScreen() {
 export function OfflineBannerScreen() {
   return (
     <EdgeLayout
-      emoji="📶"
+      icon={<WifiOff size={40} strokeWidth={1.5} />}
       title="You're offline"
       desc="Split the Plate needs internet to sync payments and splits. Your last session is still visible below."
       primary={{ label: "Retry Connection", route: "/screen/home" }}

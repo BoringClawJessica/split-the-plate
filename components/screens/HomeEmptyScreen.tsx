@@ -1,17 +1,31 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Utensils } from "lucide-react";
+import { HomeBottomBar } from "../PhoneNav";
 
 export default function HomeEmptyScreen() {
   const router = useRouter();
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "32px 28px" }}>
-      <div style={{ fontSize: 72, marginBottom: 24 }}>🍽️</div>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "32px 28px 92px" }}>
+      <div style={{
+        width: 96,
+        height: 96,
+        borderRadius: 28,
+        background: "linear-gradient(135deg, var(--amber), var(--orange))",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: 20,
+        boxShadow: "0 12px 32px rgba(245,158,11,0.25)",
+      }}>
+        <Utensils size={44} color="#000" strokeWidth={1.5} />
+      </div>
       <div style={{ fontFamily: "var(--font-display)", fontSize: 26, fontWeight: 600, color: "var(--text)", textAlign: "center", marginBottom: 12 }}>
         Your first split awaits
       </div>
-      <div style={{ fontSize: 14, color: "var(--text-secondary)", textAlign: "center", fontFamily: "var(--font-body)", lineHeight: 1.6, marginBottom: 40 }}>
+      <div style={{ fontSize: 14, color: "var(--text-secondary)", textAlign: "center", fontFamily: "var(--font-body)", lineHeight: 1.6, marginBottom: 32, maxWidth: 280 }}>
         Go out with friends, scan the receipt, and Split the Plate handles the rest.
       </div>
       <button
@@ -31,7 +45,7 @@ export default function HomeEmptyScreen() {
           marginBottom: 12,
         }}
       >
-        + Start Your First Split
+        Start your first split
       </button>
       <button
         onClick={() => router.push("/screen/friends")}
@@ -49,6 +63,7 @@ export default function HomeEmptyScreen() {
       >
         Invite friends first
       </button>
+      <HomeBottomBar />
     </div>
   );
 }

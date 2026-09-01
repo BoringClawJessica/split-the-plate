@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { tableMessages } from "@/lib/mock-data";
-import { Send } from "lucide-react";
+import { Send, Utensils } from "lucide-react";
+import { BackButton, HomeBottomBar } from "../PhoneNav";
 
 export default function TableChatScreen() {
   const [messages, setMessages] = useState(tableMessages);
@@ -15,17 +16,30 @@ export default function TableChatScreen() {
   };
 
   return (
-    <div style={{ height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
+    <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
+      <BackButton to="/screen/home" />
       {/* Header */}
       <div style={{
-        padding: "16px 20px",
+        padding: "56px 20px 16px",
         borderBottom: "1px solid var(--border)",
         flexShrink: 0,
         display: "flex",
         alignItems: "center",
         gap: 10,
       }}>
-        <div style={{ fontSize: 24 }}>🍽️</div>
+        <div style={{
+          width: 36,
+          height: 36,
+          borderRadius: 10,
+          background: "var(--bg-card)",
+          border: "1px solid var(--border)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "var(--amber)",
+        }}>
+          <Utensils size={18} strokeWidth={1.7} />
+        </div>
         <div>
           <div style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: "var(--text)" }}>Table Chat</div>
           <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>Fuego & Sol Mexican · Aug 28</div>
@@ -129,6 +143,8 @@ export default function TableChatScreen() {
           <Send size={16} color="#000" />
         </button>
       </div>
+      <div style={{ height: 80, flexShrink: 0 }} />
+      <HomeBottomBar />
     </div>
   );
 }
