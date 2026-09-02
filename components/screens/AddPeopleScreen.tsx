@@ -5,6 +5,7 @@ import { friends as friendsSeed, currentUser } from "@/lib/mock-data";
 import { Suspense, useMemo, useState } from "react";
 import { Search, UserPlus, Check } from "lucide-react";
 import { BackButton, HomeBottomBar } from "../PhoneNav";
+import { readSplit, writeSplit } from "@/lib/split-state";
 
 type Friend = { id: string; name: string; handle?: string; avatar: string };
 
@@ -21,6 +22,26 @@ function AddPeopleInner() {
   const searchParams = useSearchParams();
   const next = searchParams.get("next") === "manual" ? "manual" : "scan";
   const nextRoute = next === "manual" ? "/screen/items-detected" : "/screen/camera-scan";
+
+  // Persist the selected people to sessionStorage before moving on so the
+  // Items Detected screen can assign items to them without re-selecting.
+  const goNext = () => {
+    const chosen = [currentUser, ...friends.filter((f) => selected.includes(f.id) && f.id !== currentUser.id)];
+    const people = chosen.map((f) => ({
+      id: f.id,
+      name: f.id === currentUser.id ? "You" : f.name,
+      avatar: f.avatar,
+      handle: f.handle,
+    }));
+    const prev = readSplit();
+    writeSplit({
+      people,
+      items: prev?.items ?? [],
+      restaurant: prev?.restaurant ?? "",
+      leaderId: currentUser.id,
+    });
+    router.push(nextRoute);
+  };
   const [friends, setFriends] = useState<Friend[]>(
     friendsSeed.map((f) => ({ id: f.id, name: f.name, handle: f.handle, avatar: f.avatar }))
   );
@@ -162,7 +183,7 @@ function AddPeopleInner() {
 
       <div style={{ padding: "16px 20px 24px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", flexShrink: 0 }}>
         <button
-          onClick={() => router.push(nextRoute)}
+          onClick={goNext}
           disabled={selected.length < 1}
           style={{
             width: "100%",

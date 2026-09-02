@@ -1,23 +1,51 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { friends, currentUser, receiptTotal } from "@/lib/mock-data";
+import { useEffect, useMemo, useState } from "react";
+import { currentUser, friends, receiptTotal } from "@/lib/mock-data";
 import { BackButton, HomeBottomBar } from "../PhoneNav";
+import { readSplit, SplitPerson } from "@/lib/split-state";
+import { Crown } from "lucide-react";
 
-const PEOPLE = [
+const FALLBACK_PEOPLE: SplitPerson[] = [
   { id: currentUser.id, name: "You", avatar: currentUser.avatar },
-  ...friends.slice(0, 3).map((f) => ({ id: f.id, name: f.name, avatar: f.avatar })),
+  ...friends.slice(0, 3).map((f) => ({ id: f.id, name: f.name, avatar: f.avatar, handle: f.handle })),
 ];
 
 const TAX_RATE = 0.08;
 
+/**
+ * ReviewConfirmScreen — pre-tip review.
+ *
+ * Shows subtotal, tax, total, and each person's share. The LEADER
+ * (currentUser in the prototype) is called out — they don't send
+ * money outbound; they're collecting. Their share is what they'll pay
+ * on the check directly. Everyone else pays the leader via their
+ * chosen payment method in the next step.
+ */
 export default function ReviewConfirmScreen() {
   const router = useRouter();
+  // Read once on mount; sessionStorage isn't reactive so no re-run needed.
+  const [people] = useState<SplitPerson[]>(() => {
+    if (typeof window === "undefined") return FALLBACK_PEOPLE;
+    const split = readSplit();
+    if (split && split.people.length > 0) return split.people;
+    return FALLBACK_PEOPLE;
+  });
 
   const subtotal = receiptTotal;
   const tax = subtotal * TAX_RATE;
   const total = subtotal + tax;
-  const perPersonBase = total / PEOPLE.length;
+
+  // Prototype: even split (per-person = total / N). By-item / plinko
+  // shares would be computed from persisted state, but the prototype
+  // header math is fine either way.
+  const perPersonBase = useMemo(
+    () => (people.length > 0 ? total / people.length : 0),
+    [people.length, total],
+  );
+
+  const leaderId = currentUser.id;
 
   return (
     <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
@@ -27,7 +55,7 @@ export default function ReviewConfirmScreen() {
           Review &amp; Confirm
         </div>
         <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 4 }}>
-          Fuego &amp; Sol Mexican · Aug 30
+          You&apos;re the leader. Everyone else will pay you back.
         </div>
       </div>
 
@@ -48,7 +76,7 @@ export default function ReviewConfirmScreen() {
             ${total.toFixed(2)}
           </div>
           <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 4 }}>
-            Tip added by each person on their own share.
+            Tip is added by each person on their own share.
           </div>
         </div>
 
@@ -63,7 +91,7 @@ export default function ReviewConfirmScreen() {
           {[
             ["Subtotal", `$${subtotal.toFixed(2)}`],
             ["Tax", `$${tax.toFixed(2)}`],
-            ["Split method", `Even ÷ ${PEOPLE.length}`],
+            ["Split method", `Even ÷ ${people.length || 1}`],
             ["Per-person share", `$${perPersonBase.toFixed(2)}`],
           ].map(([label, val], i, arr) => (
             <div key={label} style={{
@@ -83,27 +111,52 @@ export default function ReviewConfirmScreen() {
           <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>
             In this split
           </div>
-          {PEOPLE.map((p) => (
-            <div key={p.id} style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              padding: "10px 0",
-              borderBottom: "1px solid var(--border)",
-            }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={p.avatar} alt={p.name} style={{ width: 36, height: 36, borderRadius: "50%", border: "2px solid var(--border)" }} />
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, color: "var(--text)", fontFamily: "var(--font-body)", fontWeight: 500 }}>{p.name}</div>
-                <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
-                  Share of the bill
+          {people.map((p) => {
+            const isLeader = p.id === leaderId;
+            return (
+              <div key={p.id} style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                padding: "10px 0",
+                borderBottom: "1px solid var(--border)",
+              }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={p.avatar} alt={p.name} style={{ width: 36, height: 36, borderRadius: "50%", border: "2px solid var(--border)" }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, color: "var(--text)", fontFamily: "var(--font-body)", fontWeight: 500, display: "flex", alignItems: "center", gap: 6 }}>
+                    {p.name}
+                    {isLeader && (
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 3, fontSize: 10, padding: "1px 6px", borderRadius: 999, background: "rgba(245,158,11,0.15)", color: "var(--amber)", border: "1px solid rgba(245,158,11,0.35)", fontWeight: 700 }}>
+                        <Crown size={9} /> LEADER
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
+                    {isLeader ? "Pays check directly — no send-back needed" : "Sends you their share"}
+                  </div>
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: "var(--amber)", fontFamily: "var(--font-body)" }}>
+                  ${perPersonBase.toFixed(2)}
                 </div>
               </div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "var(--amber)", fontFamily: "var(--font-body)" }}>
-                ${perPersonBase.toFixed(2)}
-              </div>
-            </div>
-          ))}
+            );
+          })}
+        </div>
+
+        {/* Leader note */}
+        <div style={{
+          padding: "10px 12px",
+          borderRadius: 10,
+          background: "rgba(245,158,11,0.06)",
+          border: "1px solid rgba(245,158,11,0.2)",
+          fontSize: 11,
+          color: "var(--text-muted)",
+          fontFamily: "var(--font-body)",
+          lineHeight: 1.5,
+          marginTop: 4,
+        }}>
+          Your share is already covered by the bill you&apos;re paying. Everyone else pays you via Venmo, Cash App, or cash.
         </div>
       </div>
 

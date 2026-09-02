@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { currentUser, friends, pastMeals, splitMethodLabels } from "@/lib/mock-data";
 import { Plus, Bell, User, Home as HomeIcon, Utensils } from "lucide-react";
+import { clearSplit } from "@/lib/split-state";
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -48,10 +49,10 @@ export default function HomeScreen() {
         </div>
       </div>
 
-      {/* Big CTA */}
+      {/* Big CTA — top-of-home ➕ shortcut to start a fresh split. */}
       <div style={{ padding: "0 20px 16px" }}>
         <button
-          onClick={() => router.push("/screen/new-split")}
+          onClick={() => { clearSplit(); router.push("/screen/new-split"); }}
           style={{
             width: "100%",
             padding: "18px 20px",
@@ -187,13 +188,14 @@ export default function HomeScreen() {
         </div>
       </div>
 
-      {/* Home bottom bar — Home + Plus */}
-      <HomeTwoButtonBar />
+      {/* Home bottom bar — Home ONLY. The ➕ New Split shortcut lives at
+          the TOP of home (the big CTA). Bottom bar stays minimal. */}
+      <HomeOnlyBottomBar />
     </div>
   );
 }
 
-function HomeTwoButtonBar() {
+function HomeOnlyBottomBar() {
   const router = useRouter();
   return (
     <div
@@ -205,7 +207,6 @@ function HomeTwoButtonBar() {
         zIndex: 15,
         display: "flex",
         justifyContent: "center",
-        gap: 22,
         padding: "10px 0 14px",
         background:
           "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0.55) 100%)",
@@ -231,26 +232,6 @@ function HomeTwoButtonBar() {
         }}
       >
         <HomeIcon size={22} strokeWidth={2.4} />
-      </button>
-      <button
-        onClick={() => router.push("/screen/new-split")}
-        aria-label="New Split"
-        style={{
-          pointerEvents: "auto",
-          width: 52,
-          height: 52,
-          borderRadius: 999,
-          background: "var(--bg-card)",
-          border: "1px solid var(--border-bright)",
-          color: "var(--text)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          cursor: "pointer",
-          boxShadow: "0 6px 16px rgba(0,0,0,0.25)",
-        }}
-      >
-        <Plus size={22} strokeWidth={2.4} />
       </button>
     </div>
   );

@@ -1,208 +1,160 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { receiptItems, friends, currentUser } from "@/lib/mock-data";
-import { useState } from "react";
-import { Crown, Hand, Check } from "lucide-react";
+import { useMemo, useState } from "react";
 import { BackButton, HomeBottomBar } from "../PhoneNav";
+import {
+  readSplit,
+  computePerPersonFromAssignments,
+  SplitItem,
+  SplitPerson,
+} from "@/lib/split-state";
+import {
+  receiptItems as receiptItemsSeed,
+  currentUser,
+  friends as friendsSeed,
+} from "@/lib/mock-data";
 
-const PEOPLE = [
-  { id: currentUser.id, name: "You", avatar: currentUser.avatar },
-  ...friends.slice(0, 3).map((f) => ({ id: f.id, name: f.name, avatar: f.avatar })),
-];
-
-export default function ByItemScreen({ isLeader: isLeaderProp }: { isLeader?: boolean } = {}) {
+/**
+ * ByItemScreen — READ-ONLY view of already-assigned items.
+ *
+ * Assignment happens up front on the Items Detected step. This screen
+ * just READS the assignments (from sessionStorage) and shows each
+ * person their portion. No re-assignment UI.
+ *
+ * Unassigned items are split evenly across everyone in the party, so
+ * the totals still add up to the subtotal.
+ */
+export default function ByItemScreen() {
   const router = useRouter();
-  // Mock leader toggle — default: viewer IS the leader
-  const [isLeader, setIsLeader] = useState<boolean>(isLeaderProp ?? true);
-  const [assignments, setAssignments] = useState<Record<string, string>>({});
+  // Read once on mount — sessionStorage is not reactive.
+  const [state] = useState<{ people: SplitPerson[]; items: SplitItem[] } | null>(() => {
+    if (typeof window === "undefined") return null;
+    const persisted = readSplit();
+    if (persisted && persisted.people.length > 0 && persisted.items.length > 0) {
+      return { people: persisted.people, items: persisted.items };
+    }
+    // Fallback so the screen still renders when accessed directly.
+    return {
+      people: [
+        { id: currentUser.id, name: "You", avatar: currentUser.avatar },
+        ...friendsSeed.slice(0, 3).map((f) => ({
+          id: f.id,
+          name: f.name,
+          avatar: f.avatar,
+          handle: f.handle,
+        })),
+      ],
+      items: receiptItemsSeed.map((i) => ({ ...i, assignedTo: [] })),
+    };
+  });
 
-  const assign = (itemId: string, personId: string) => {
-    setAssignments((a) => ({ ...a, [itemId]: personId }));
-  };
+  const totals = useMemo(() => {
+    if (!state) return { perPerson: {} as Record<string, number>, subtotal: 0, unassignedShare: 0, unassignedCount: 0 };
+    const { people, items } = state;
+    const assignedTotals = computePerPersonFromAssignments(people, items);
+    // Distribute unassigned items evenly across the whole party.
+    const unassigned = items.filter((i) => i.assignedTo.length === 0);
+    const unassignedSum = unassigned.reduce((s, i) => s + i.price, 0);
+    const evenShare = people.length > 0 ? unassignedSum / people.length : 0;
+    const perPerson: Record<string, number> = {};
+    for (const p of people) perPerson[p.id] = (assignedTotals[p.id] ?? 0) + evenShare;
+    const subtotal = items.reduce((s, i) => s + i.price, 0);
+    return { perPerson, subtotal, unassignedShare: evenShare, unassignedCount: unassigned.length };
+  }, [state]);
 
-  const claim = (itemId: string) => {
-    setAssignments((a) => ({ ...a, [itemId]: currentUser.id }));
-  };
+  if (!state) {
+    return <div style={{ height: "100%", background: "var(--bg-base)" }} />;
+  }
 
-  const assigned = Object.keys(assignments).length;
+  const { people, items } = state;
+  const { perPerson, subtotal, unassignedCount, unassignedShare } = totals;
 
   return (
     <div style={{ position: "relative", height: "100%", background: "var(--bg-base)", display: "flex", flexDirection: "column" }}>
       <BackButton to="/screen/split-method" />
       <div style={{ padding: "56px 20px 12px", flexShrink: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div>
-            <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--text)" }}>
-              By Item
-            </div>
-            <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 4 }}>
-              {assigned}/{receiptItems.length} items assigned
-            </div>
-          </div>
-
-          {/* Prototype leader toggle */}
-          <button
-            onClick={() => setIsLeader((v) => !v)}
-            title="Toggle leader view (prototype)"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "6px 10px",
-              borderRadius: 999,
-              background: isLeader ? "rgba(245,158,11,0.12)" : "var(--bg-card)",
-              border: `1px solid ${isLeader ? "rgba(245,158,11,0.35)" : "var(--border)"}`,
-              color: isLeader ? "var(--amber)" : "var(--text-muted)",
-              fontSize: 11,
-              fontFamily: "var(--font-body)",
-              cursor: "pointer",
-              fontWeight: 600,
-            }}
-          >
-            <Crown size={12} /> {isLeader ? "Leader view" : "Payer view"}
-          </button>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--text)" }}>
+          By Item
+        </div>
+        <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 4 }}>
+          Everyone pays for what they ordered.
         </div>
       </div>
 
-      {/* Person chips (leader only) */}
-      {isLeader && (
-        <div style={{ padding: "0 20px 12px", flexShrink: 0, display: "flex", gap: 8, overflowX: "auto" }}>
-          {PEOPLE.map((p) => {
-            const total = receiptItems
-              .filter((i) => assignments[i.id] === p.id)
-              .reduce((s, i) => s + i.price, 0);
-            return (
-              <div
-                key={p.id}
-                style={{
-                  flexShrink: 0,
-                  padding: "8px 12px",
-                  borderRadius: 12,
-                  background: "var(--bg-card)",
-                  border: "1px solid var(--border)",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={p.avatar} alt={p.name} style={{ width: 24, height: 24, borderRadius: "50%" }} />
-                <div>
-                  <div style={{ fontSize: 11, color: "var(--text)", fontFamily: "var(--font-body)", fontWeight: 600 }}>{p.name}</div>
-                  <div style={{ fontSize: 10, color: "var(--amber)", fontFamily: "var(--font-body)" }}>${total.toFixed(2)}</div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Items */}
+      {/* Per-person totals */}
       <div style={{ flex: 1, overflowY: "auto", padding: "0 20px" }}>
-        {receiptItems.map((item) => {
-          const assignedPersonId = assignments[item.id];
-          const claimedByMe = assignedPersonId === currentUser.id;
-          const takenBySomeoneElse = assignedPersonId && assignedPersonId !== currentUser.id;
-          const takenName = takenBySomeoneElse
-            ? PEOPLE.find((p) => p.id === assignedPersonId)?.name ?? ""
-            : "";
+        <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+          Per person
+        </div>
 
+        {people.map((p) => {
+          const myItems = items.filter((i) => i.assignedTo.includes(p.id));
+          const owe = perPerson[p.id] ?? 0;
           return (
             <div
-              key={item.id}
+              key={p.id}
               style={{
-                padding: "12px 0",
-                borderBottom: "1px solid var(--border)",
+                padding: "14px",
+                borderRadius: 14,
+                background: "var(--bg-card)",
+                border: "1px solid var(--border)",
+                marginBottom: 10,
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                <span style={{ fontSize: 14, color: "var(--text)", fontFamily: "var(--font-body)", fontWeight: 500 }}>{item.name}</span>
-                <span style={{ fontSize: 14, color: "var(--amber)", fontFamily: "var(--font-body)", fontWeight: 600 }}>${item.price.toFixed(2)}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={p.avatar} alt={p.name} style={{ width: 40, height: 40, borderRadius: "50%", border: "2px solid var(--border)" }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", fontFamily: "var(--font-body)" }}>
+                    {p.name}
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>
+                    {myItems.length} {myItems.length === 1 ? "item" : "items"}{unassignedCount > 0 ? ` + shared` : ""}
+                  </div>
+                </div>
+                <div style={{ fontSize: 18, fontWeight: 800, color: "var(--amber)", fontFamily: "var(--font-body)" }}>
+                  ${owe.toFixed(2)}
+                </div>
               </div>
 
-              {isLeader ? (
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  {PEOPLE.map((p) => (
-                    <button
-                      key={p.id}
-                      onClick={() => assign(item.id, p.id)}
-                      style={{
-                        padding: "4px 10px",
-                        borderRadius: 8,
-                        background: assignments[item.id] === p.id ? "var(--amber)" : "var(--bg-card)",
-                        color: assignments[item.id] === p.id ? "#000" : "var(--text-muted)",
-                        fontSize: 11,
-                        border: `1px solid ${assignments[item.id] === p.id ? "var(--amber)" : "var(--border)"}`,
-                        cursor: "pointer",
-                        fontFamily: "var(--font-body)",
-                        fontWeight: assignments[item.id] === p.id ? 600 : 400,
-                      }}
-                    >
-                      {p.name}
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <div>
-                  {claimedByMe ? (
-                    <div style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 6,
-                      padding: "5px 10px",
-                      borderRadius: 8,
-                      background: "rgba(22,163,74,0.15)",
-                      color: "#4ade80",
-                      fontSize: 11,
-                      fontFamily: "var(--font-body)",
-                      fontWeight: 600,
-                    }}>
-                      <Check size={12} /> Claimed
+              {(myItems.length > 0 || unassignedCount > 0) && (
+                <div style={{ marginTop: 10, paddingLeft: 52, display: "flex", flexDirection: "column", gap: 4 }}>
+                  {myItems.map((it) => {
+                    const perHead = it.price / it.assignedTo.length;
+                    const shared = it.assignedTo.length > 1;
+                    return (
+                      <div key={it.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", fontSize: 11, fontFamily: "var(--font-body)", color: "var(--text-muted)" }}>
+                        <span>{it.name}{shared ? ` (÷${it.assignedTo.length})` : ""}</span>
+                        <span style={{ color: "var(--text-secondary)" }}>${perHead.toFixed(2)}</span>
+                      </div>
+                    );
+                  })}
+                  {unassignedCount > 0 && (
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", fontSize: 11, fontFamily: "var(--font-body)", color: "var(--text-muted)" }}>
+                      <span>Shared items ({unassignedCount})</span>
+                      <span style={{ color: "var(--text-secondary)" }}>${unassignedShare.toFixed(2)}</span>
                     </div>
-                  ) : takenBySomeoneElse ? (
-                    <div style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 6,
-                      padding: "5px 10px",
-                      borderRadius: 8,
-                      background: "var(--bg-card)",
-                      color: "var(--text-muted)",
-                      fontSize: 11,
-                      fontFamily: "var(--font-body)",
-                    }}>
-                      Taken by {takenName}
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => claim(item.id)}
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 6,
-                        padding: "5px 12px",
-                        borderRadius: 8,
-                        background: "var(--amber)",
-                        color: "#000",
-                        fontSize: 11,
-                        border: "none",
-                        cursor: "pointer",
-                        fontFamily: "var(--font-body)",
-                        fontWeight: 700,
-                      }}
-                    >
-                      <Hand size={12} /> Claim
-                    </button>
                   )}
                 </div>
               )}
             </div>
           );
         })}
+
+        {unassignedCount > 0 && (
+          <div style={{ padding: "10px 12px", borderRadius: 10, background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)", fontSize: 11, color: "var(--amber)", fontFamily: "var(--font-body)", marginTop: 4 }}>
+            {unassignedCount} unassigned {unassignedCount === 1 ? "item is" : "items are"} split evenly across everyone.
+          </div>
+        )}
       </div>
 
-      <div style={{ padding: "16px 20px 24px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", flexShrink: 0 }}>
+      {/* Bottom CTA */}
+      <div style={{ padding: "16px 20px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", flexShrink: 0 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+          <span style={{ fontSize: 13, color: "var(--text-muted)", fontFamily: "var(--font-body)" }}>Subtotal</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: "var(--text)", fontFamily: "var(--font-body)" }}>${subtotal.toFixed(2)}</span>
+        </div>
         <button
           onClick={() => router.push("/screen/review-confirm")}
           style={{

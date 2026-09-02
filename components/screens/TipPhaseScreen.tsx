@@ -30,10 +30,10 @@ export default function TipPhaseScreen() {
       <BackButton to="/screen/review-confirm" />
       <div style={{ padding: "56px 20px 12px", flexShrink: 0 }}>
         <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 600, color: "var(--text)" }}>
-          Add your tip
+          Confirm your tip
         </div>
         <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "var(--font-body)", marginTop: 4 }}>
-          Everyone picks their own tip on their share.
+          You&apos;re the leader — you&apos;ll pay this on the check directly. No outbound transfer.
         </div>
       </div>
 
@@ -154,7 +154,7 @@ export default function TipPhaseScreen() {
 
       <div style={{ padding: "16px 20px 24px", borderTop: "1px solid var(--border)", background: "var(--bg-surface)", flexShrink: 0 }}>
         <button
-          onClick={() => router.push(`/screen/payment-handoff?amount=${total.toFixed(2)}&tip=${tipAmount.toFixed(2)}`)}
+          onClick={() => router.push(`/screen/leader-dashboard?amount=${total.toFixed(2)}&tip=${tipAmount.toFixed(2)}`)}
           style={{
             width: "100%",
             padding: "15px",
@@ -169,7 +169,7 @@ export default function TipPhaseScreen() {
             boxShadow: "0 8px 24px rgba(245,158,11,0.3)",
           }}
         >
-          Continue to Payment
+          Confirm & See Dashboard
         </button>
       </div>
       <HomeBottomBar hidden />
