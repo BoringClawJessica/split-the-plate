@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html><body style="margin:0;display:flex;justify-content:center;align-items:center;height:100vh;background:white">
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Fork pointing UP (will be rotated to 11 o'clock) -->
+    <g id="fork">
+      <!-- Handle: from center (512) up -->
+      <rect x="504" y="270" width="16" height="180" rx="5" fill="#1a1a1a"/>
+      <!-- Neck -->
+      <rect x="506" y="240" width="12" height="40" rx="3" fill="#1a1a1a"/>
+      <!-- 4 Tines -->
+      <line x1="498" y1="165" x2="498" y2="238" stroke="#1a1a1a" stroke-width="7" stroke-linecap="round"/>
+      <line x1="509" y1="165" x2="509" y2="238" stroke="#1a1a1a" stroke-width="7" stroke-linecap="round"/>
+      <line x1="520" y1="165" x2="520" y2="238" stroke="#1a1a1a" stroke-width="7" stroke-linecap="round"/>
+      <line x1="531" y1="165" x2="531" y2="238" stroke="#1a1a1a" stroke-width="7" stroke-linecap="round"/>
+      <!-- Tine base connector -->
+      <rect x="495" y="235" width="40" height="8" rx="2" fill="#1a1a1a"/>
+    </g>
+    <!-- Knife pointing UP (will be rotated to 2 o'clock) -->
+    <g id="knife">
+      <!-- Handle -->
+      <rect x="504" y="270" width="16" height="180" rx="5" fill="#1a1a1a"/>
+      <!-- Bolster -->
+      <rect x="500" y="245" width="24" height="30" rx="3" fill="#1a1a1a"/>
+      <!-- Blade -->
+      <path d="M500,245 L500,140 Q500,125 512,120 Q524,125 524,140 L524,245 Z" fill="#1a1a1a"/>
+      <!-- Blade edge (one side straight, one side curved for realism) -->
+    </g>
+  </defs>
+
+  <!-- Bold circle border -->
+  <circle cx="512" cy="512" r="440" stroke="#1a1a1a" stroke-width="48" fill="none"/>
+  
+  <!-- Tick marks: 12, 1, 3, 4, 5, 6, 7, 8, 9, 10 — NO 11 or 2 -->
+  <!-- Using line from inner edge toward center, each at 30° intervals -->
+  <!-- 12 (0°) -->   <line x1="512" y1="112" x2="512" y2="162" stroke="#1a1a1a" stroke-width="12" stroke-linecap="round"/>
+  <!-- 1 (30°) -->   <line x1="712" y1="147" x2="687" y2="190" stroke="#1a1a1a" stroke-width="12" stroke-linecap="round"/>
+  <!-- 3 (90°) -->   <line x1="912" y1="512" x2="862" y2="512" stroke="#1a1a1a" stroke-width="12" stroke-linecap="round"/>
+  <!-- 4 (120°) -->  <line x1="858" y1="712" x2="815" y2="687" stroke="#1a1a1a" stroke-width="12" stroke-linecap="round"/>
+  <!-- 5 (150°) -->  <line x1="712" y1="877" x2="687" y2="834" stroke="#1a1a1a" stroke-width="12" stroke-linecap="round"/>
+  <!-- 6 (180°) -->  <line x1="512" y1="912" x2="512" y2="862" stroke="#1a1a1a" stroke-width="12" stroke-linecap="round"/>
+  <!-- 7 (210°) -->  <line x1="312" y1="877" x2="337" y2="834" stroke="#1a1a1a" stroke-width="12" stroke-linecap="round"/>
+  <!-- 8 (240°) -->  <line x1="166" y1="712" x2="209" y2="687" stroke="#1a1a1a" stroke-width="12" stroke-linecap="round"/>
+  <!-- 9 (270°) -->  <line x1="112" y1="512" x2="162" y2="512" stroke="#1a1a1a" stroke-width="12" stroke-linecap="round"/>
+  <!-- 10 (300°) --> <line x1="166" y1="312" x2="209" y2="337" stroke="#1a1a1a" stroke-width="12" stroke-linecap="round"/>
+  
+  <!-- Fork hand: rotate to 11 o'clock = -60° from 12 = 330° = rotate(-60) -->
+  <use href="#fork" transform="rotate(-60, 512, 512)"/>
+  
+  <!-- Knife hand: rotate to 2 o'clock = 60° from 12 = rotate(60) -->
+  <use href="#knife" transform="rotate(60, 512, 512)"/>
+  
+  <!-- Center dot (on top) -->
+  <circle cx="512" cy="512" r="16" fill="#1a1a1a"/>
+</svg>
+</body></html>
